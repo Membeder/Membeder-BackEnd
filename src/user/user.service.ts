@@ -24,10 +24,6 @@ export class UserService {
     return await this.userRepository.findOne({ where: { email } });
   }
 
-  async findByIdAndToken(id: string, refreshToken: string): Promise<User> {
-    return await this.userRepository.findOne({ where: { id, refreshToken } });
-  }
-
   async update(id: string, data: DeepPartial<User>): Promise<UpdateResult> {
     return await this.userRepository.update(id, data);
   }
