@@ -50,7 +50,7 @@ export class UserController {
   @ApiCookieAuth()
   update(@Param('id') id: string, @Body() data: UpdateUserDto, @Req() req) {
     if (req.user.id != id)
-      throw new HttpException(null, HttpStatus.UNAUTHORIZED);
+      throw new HttpException(undefined, HttpStatus.UNAUTHORIZED);
     return this.userService.update(id, data);
   }
 
@@ -65,7 +65,7 @@ export class UserController {
   @ApiCookieAuth()
   remove(@Param('id') id: string, @Req() req) {
     if (req.user.id != id)
-      throw new HttpException(null, HttpStatus.UNAUTHORIZED);
+      throw new HttpException(undefined, HttpStatus.UNAUTHORIZED);
     return this.userService.remove(id);
   }
 }

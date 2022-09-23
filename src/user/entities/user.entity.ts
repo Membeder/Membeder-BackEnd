@@ -13,6 +13,10 @@ export class User {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
+  @ApiProperty({ description: 'Account Type' })
+  @Column({ nullable: false })
+  type: 'google' | 'email';
+
   @ApiProperty({ description: '이름' })
   @Column({ nullable: false })
   name: string;
@@ -26,7 +30,7 @@ export class User {
   email: string;
 
   @ApiProperty({ description: '비밀번호' })
-  @Column({ nullable: false })
+  @Column({ nullable: true })
   password: string;
 
   @ApiProperty({ description: '직종' })

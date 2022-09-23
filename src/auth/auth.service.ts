@@ -35,9 +35,14 @@ export class AuthService {
   }
 
   private async createUser(user: CreateUserDto): Promise<User> {
+    if (user.type == 'email' && !user.password)
+      throw new HttpException(undefined, HttpStatus.BAD_REQUEST);
+    const password = user.password
+      ? await bcrypt.hash(user.password, 10)
+      : user.password;
     const newUser = await this.userService.create({
       ...user,
-      password: await bcrypt.hash(user.password, 10),
+      password,
     });
     return await this.userService.create(newUser);
   }
@@ -47,12 +52,12 @@ export class AuthService {
       const user = await this.userService.findByEmail(email);
       const isPasswordMatch = await bcrypt.compare(password, user.password);
       if (!isPasswordMatch)
-        throw new HttpException(null, HttpStatus.UNAUTHORIZED);
+        throw new HttpException(undefined, HttpStatus.UNAUTHORIZED);
       user.password = undefined;
       return user;
     } catch (e) {
       Logger.log(e);
-      throw new HttpException(null, HttpStatus.UNAUTHORIZED);
+      throw new HttpException(undefined, HttpStatus.UNAUTHORIZED);
     }
   }
 

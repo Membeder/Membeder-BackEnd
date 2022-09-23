@@ -13,8 +13,8 @@ import { GoogleModule } from './google/google.module';
     }),
     DatabaseModule,
     UserModule,
-    GoogleModule,
     AuthModule,
+    GoogleModule,
   ],
 })
 export class AppModule {}

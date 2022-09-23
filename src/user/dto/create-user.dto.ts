@@ -14,6 +14,14 @@ import { ApiProperty } from '@nestjs/swagger';
 
 export class CreateUserDto {
   @ApiProperty({
+    description: 'Account Type',
+    example: 'email',
+    required: true,
+  })
+  @IsString()
+  type: 'google' | 'email';
+
+  @ApiProperty({
     description: '이름',
     example: '윤도현',
     required: true,
@@ -47,6 +55,7 @@ export class CreateUserDto {
     required: true,
   })
   @IsString()
+  @IsOptional()
   @Length(8, 24)
   password: string;
 
