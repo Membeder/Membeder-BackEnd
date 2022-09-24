@@ -14,9 +14,9 @@ import { UserService } from './user.service';
 import { UpdateUserDto } from './dto/update-user.dto';
 import {
   ApiCookieAuth,
-  ApiCreatedResponse,
   ApiOperation,
   ApiParam,
+  ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
 import { AuthGuard } from '@nestjs/passport';
@@ -31,7 +31,8 @@ export class UserController {
     summary: '유저 조회',
     description: '유저 UUID를 이용하여 유저를 조회합니다.',
   })
-  @ApiCreatedResponse({
+  @ApiResponse({
+    status: HttpStatus.OK,
     description: '현재 로그인되어 있는 유저를 조회합니다.',
   })
   @ApiParam({ name: 'id', required: true, description: '유저 UUID' })
@@ -45,7 +46,10 @@ export class UserController {
     summary: '유저 정보 수정',
     description: '유저 정보를 수정합니다.',
   })
-  @ApiCreatedResponse({ description: '유저 정보를 수정합니다.' })
+  @ApiResponse({
+    status: HttpStatus.OK,
+    description: '유저 정보를 수정합니다.',
+  })
   @ApiParam({ name: 'id', required: true, description: '유저 UUID' })
   @ApiCookieAuth()
   update(@Param('id') id: string, @Body() data: UpdateUserDto, @Req() req) {
@@ -60,7 +64,7 @@ export class UserController {
     summary: '유저 삭제',
     description: '유저를 삭제합니다.',
   })
-  @ApiCreatedResponse({ description: '유저를 삭제합니다.' })
+  @ApiResponse({ status: HttpStatus.OK, description: '유저를 삭제합니다.' })
   @ApiParam({ name: 'id', required: true, description: '유저 UUID' })
   @ApiCookieAuth()
   remove(@Param('id') id: string, @Req() req) {

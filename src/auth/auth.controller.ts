@@ -1,7 +1,6 @@
 import {
   Body,
   Controller,
-  Get,
   HttpCode,
   HttpStatus,
   Post,
@@ -14,8 +13,8 @@ import { CreateUserDto } from '../user/dto/create-user.dto';
 import { AuthGuard } from '@nestjs/passport';
 import {
   ApiCookieAuth,
-  ApiCreatedResponse,
   ApiOperation,
+  ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
 import { LoginUserDto } from './dto/login-user.dto';
@@ -31,7 +30,8 @@ export class AuthController {
     summary: '현재 유저 조회',
     description: '현재 로그인되어 있는 유저를 조회합니다.',
   })
-  @ApiCreatedResponse({
+  @ApiResponse({
+    status: HttpStatus.OK,
     description: '현재 로그인되어 있는 유저를 조회합니다.',
   })
   @ApiCookieAuth()
@@ -46,9 +46,9 @@ export class AuthController {
     summary: '유저 회원가입',
     description: '회원가입을 하여 유저를 생성합니다.',
   })
-  @ApiCreatedResponse({
+  @ApiResponse({
+    status: HttpStatus.CREATED,
     description: '회원가입을 하여 유저를 생성합니다.',
-    type: CreateUserDto,
   })
   async signUp(@Body() user: CreateUserDto) {
     return this.authService.signUp(user);
@@ -56,21 +56,15 @@ export class AuthController {
 
   @Post('/login')
   @UseGuards(AuthGuard('local'))
-  @HttpCode(HttpStatus.OK)
   @ApiOperation({
     summary: '유저 로그인',
     description: '이메일과 비밀번호를 이용하여 로그인을 합니다.',
   })
-  @ApiCreatedResponse({
+  @ApiResponse({
+    status: HttpStatus.OK,
     description: '이메일과 비밀번호를 이용하여 로그인을 합니다.',
-    type: LoginUserDto,
   })
-  async signIn(
-    @Body('email') email: string,
-    @Body('password') password: string,
-    @Res() res,
-    @Req() req,
-  ) {
+  async signIn(@Body() body: LoginUserDto, @Res() res, @Req() req) {
     const token = await this.authService.generateToken(req.user);
     res.cookie('Authentication', token.accessToken);
     res.send(token);
@@ -78,12 +72,14 @@ export class AuthController {
 
   @Post('/logout')
   @UseGuards(AuthGuard('jwt'))
-  @HttpCode(HttpStatus.OK)
   @ApiOperation({
     summary: '유저 로그아웃',
     description: '유저를 로그아웃합니다.',
   })
-  @ApiCreatedResponse({ description: '유저를 로그아웃합니다.' })
+  @ApiResponse({
+    status: HttpStatus.OK,
+    description: '유저를 로그아웃합니다.',
+  })
   @ApiCookieAuth()
   async signOut(@Req() req, @Res() res) {
     res.clearCookie('Authentication');

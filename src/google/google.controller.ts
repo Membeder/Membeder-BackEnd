@@ -1,10 +1,12 @@
-import { Controller, Get, Req, Res, UseGuards } from '@nestjs/common';
 import {
-  ApiCreatedResponse,
-  ApiOAuth2,
-  ApiOperation,
-  ApiTags,
-} from '@nestjs/swagger';
+  Controller,
+  Get,
+  HttpStatus,
+  Req,
+  Res,
+  UseGuards,
+} from '@nestjs/common';
+import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { AuthGuard } from '@nestjs/passport';
 import { GoogleService } from './google.service';
 
@@ -19,7 +21,8 @@ export class GoogleController {
     summary: '구글 로그인',
     description: '구글 OAuth를 이용하여 로그인을 합니다.',
   })
-  @ApiCreatedResponse({
+  @ApiResponse({
+    status: HttpStatus.OK,
     description: '구글 OAuth를 이용하여 로그인을 합니다.',
   })
   // eslint-disable-next-line @typescript-eslint/no-unused-vars,@typescript-eslint/no-empty-function
@@ -32,7 +35,8 @@ export class GoogleController {
     description:
       '구글에서 로그인하고 받은 값으로 회원가입 여부 및 토큰을 발급합니다.',
   })
-  @ApiCreatedResponse({
+  @ApiResponse({
+    status: HttpStatus.OK,
     description:
       '구글에서 로그인하고 받은 값으로 회원가입 여부 및 토큰을 발급합니다.',
   })
