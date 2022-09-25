@@ -25,6 +25,14 @@ export class User {
   @Column({ nullable: false, unique: true })
   nickname: string;
 
+  @ApiProperty({ description: '나이' })
+  @Column({ nullable: false })
+  age: number;
+
+  @ApiProperty({ description: '프로필 사진' })
+  @Column({ nullable: true })
+  picture: string;
+
   @ApiProperty({ description: '이메일' })
   @Column({ nullable: false, unique: true })
   email: string;

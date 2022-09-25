@@ -42,6 +42,26 @@ export class CreateUserDto {
   nickname: string;
 
   @ApiProperty({
+    description: '나이',
+    example: 18,
+    required: true,
+  })
+  @IsInt()
+  age: number;
+
+  @ApiProperty({
+    description: '프로필 사진',
+    example: 'URL',
+    required: false,
+  })
+  @IsOptional()
+  @IsString()
+  @ValidateIf((object, value) => {
+    return /^[\w-]+@([\w-]+\.)+[\w-]{2,4}$/.test(value);
+  })
+  picture: string;
+
+  @ApiProperty({
     description: '이메일',
     example: 'test@gmail.com',
     required: true,
