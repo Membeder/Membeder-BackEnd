@@ -21,7 +21,7 @@ import {
 } from '@nestjs/swagger';
 import { LoginUserDto } from './dto/login-user.dto';
 import { GetUserDto } from '../user/dto/get-user.dto';
-import { UserTokenDto } from './dto/user-token.dto';
+import { UserLoginDto } from './dto/user-login.dto';
 
 @ApiTags('Auth')
 @Controller('auth')
@@ -69,12 +69,16 @@ export class AuthController {
   @ApiResponse({
     status: HttpStatus.CREATED,
     description: '이메일과 비밀번호를 이용하여 로그인을 합니다.',
-    type: UserTokenDto,
+    type: UserLoginDto,
   })
   async signIn(@Body() body: LoginUserDto, @Res() res, @Req() req) {
     const token = await this.authService.generateToken(req.user);
     res.cookie('Authentication', token.accessToken);
-    res.send(token);
+    req.user.password = undefined;
+    res.send({
+      ...req.user,
+      ...token,
+    });
   }
 
   @Delete()

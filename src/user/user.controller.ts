@@ -39,10 +39,15 @@ export class UserController {
     type: GetUserDto,
   })
   @ApiParam({ name: 'id', required: true, description: '유저 UUID' })
-  async find(@Param('id') id: string) {
-    const result = await this.userService.findById(id);
-    result.password = undefined;
-    return result;
+  async find(@Param('id') id: string, @Res() res) {
+    const user = await this.userService.findById(id);
+    if (user) {
+      user.password = undefined;
+      res.send(user);
+    } else {
+      res.status(HttpStatus.BAD_REQUEST);
+      res.send({ statusCode: HttpStatus.BAD_REQUEST });
+    }
   }
 
   @Patch(':id')
