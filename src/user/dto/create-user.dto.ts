@@ -1,4 +1,5 @@
 import {
+  IsDate,
   IsEmail,
   IsIn,
   IsInt,
@@ -12,6 +13,7 @@ import {
 import { Unique } from 'typeorm';
 import { User } from '../entities/user.entity';
 import { ApiProperty } from '@nestjs/swagger';
+import { Transform, Type } from 'class-transformer';
 
 export class CreateUserDto {
   @ApiProperty({
@@ -45,7 +47,8 @@ export class CreateUserDto {
     description: '생년월일',
     required: true,
   })
-  @IsInt()
+  @IsDate()
+  @Type(() => Date)
   birth: Date;
 
   @ApiProperty({
