@@ -25,9 +25,9 @@ export class User {
   @Column({ nullable: false, unique: true })
   nickname: string;
 
-  @ApiProperty({ description: '나이' })
+  @ApiProperty({ description: '생년월일' })
   @Column({ nullable: false })
-  age: number;
+  birth: Date;
 
   @ApiProperty({ description: '프로필 사진' })
   @Column({ nullable: true })

@@ -42,12 +42,11 @@ export class CreateUserDto {
   nickname: string;
 
   @ApiProperty({
-    description: '나이',
-    example: 18,
+    description: '생년월일',
     required: true,
   })
   @IsInt()
-  age: number;
+  birth: Date;
 
   @ApiProperty({
     description: '프로필 사진',
