@@ -1,6 +1,8 @@
 import {
   Body,
   Controller,
+  Delete,
+  Get,
   HttpCode,
   HttpStatus,
   Post,
@@ -26,7 +28,7 @@ import { UserTokenDto } from './dto/user-token.dto';
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
-  @Post()
+  @Get()
   @UseGuards(AuthGuard('jwt'))
   @ApiOperation({
     summary: '현재 유저 조회',
@@ -58,7 +60,7 @@ export class AuthController {
     return this.authService.signUp(user);
   }
 
-  @Post('/login')
+  @Post()
   @UseGuards(AuthGuard('local'))
   @ApiOperation({
     summary: '유저 로그인',
@@ -75,7 +77,7 @@ export class AuthController {
     res.send(token);
   }
 
-  @Post('/logout')
+  @Delete()
   @UseGuards(AuthGuard('jwt'))
   @ApiOperation({
     summary: '유저 로그아웃',
