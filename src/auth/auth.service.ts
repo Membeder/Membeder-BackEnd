@@ -62,9 +62,16 @@ export class AuthService {
   }
 
   async signUp(user: CreateUserDto): Promise<User> {
-    const existUser = await this.userService.findByEmail(user.email);
-    if (existUser)
+    const { nickname } = user;
+    const existEmail = await this.userService.findByEmail(user.email);
+    const existNickname = await this.userService.find({ nickname });
+    if (existEmail)
       throw new HttpException('Email is already exist', HttpStatus.BAD_REQUEST);
+    if (existNickname.length > 0)
+      throw new HttpException(
+        'Nickname is already exist',
+        HttpStatus.BAD_REQUEST,
+      );
     const data = await this.createUser(user);
     data.password = undefined;
     return data;

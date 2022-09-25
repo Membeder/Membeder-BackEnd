@@ -17,6 +17,8 @@ export class GoogleService {
       ...callback,
       registered: !!user,
       accessToken,
+      provider: undefined,
+      sub: undefined,
     };
   }
 }

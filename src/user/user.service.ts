@@ -3,6 +3,7 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { DeepPartial, DeleteResult, Repository, UpdateResult } from 'typeorm';
 import { User } from './entities/user.entity';
 import { InjectRepository } from '@nestjs/typeorm';
+import { FindUserDto } from './dto/find-user.dto';
 
 @Injectable()
 export class UserService {
@@ -16,7 +17,25 @@ export class UserService {
     return await this.userRepository.save(newUser);
   }
 
-  async find(id: string): Promise<User> {
+  async find(option: FindUserDto): Promise<User[]> {
+    const {
+      id,
+      name,
+      nickname,
+      email,
+      page = 1,
+      count = 5,
+      sort = 'ASC',
+    } = option;
+    return await this.userRepository.find({
+      order: { created: sort },
+      where: { id, name, nickname, email },
+      skip: (page - 1) * count,
+      take: count,
+    });
+  }
+
+  async findById(id: string): Promise<User> {
     return await this.userRepository.findOne({ where: { id } });
   }
 

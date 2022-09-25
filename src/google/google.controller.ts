@@ -9,6 +9,7 @@ import {
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { AuthGuard } from '@nestjs/passport';
 import { GoogleService } from './google.service';
+import { GoogleProfileDto } from './dto/google-profile.dto';
 
 @ApiTags('Google')
 @Controller('google')
@@ -39,6 +40,7 @@ export class GoogleController {
     status: HttpStatus.OK,
     description:
       '구글에서 로그인하고 받은 값으로 회원가입 여부 및 토큰을 발급합니다.',
+    type: GoogleProfileDto,
   })
   async callback(@Req() req, @Res() res) {
     const data = await this.googleService.callback(req.user);

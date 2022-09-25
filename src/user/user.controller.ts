@@ -9,6 +9,7 @@ import {
   Req,
   HttpException,
   HttpStatus,
+  Res,
 } from '@nestjs/common';
 import { UserService } from './user.service';
 import { UpdateUserDto } from './dto/update-user.dto';
@@ -20,6 +21,7 @@ import {
   ApiTags,
 } from '@nestjs/swagger';
 import { AuthGuard } from '@nestjs/passport';
+import { GetUserDto } from './dto/get-user.dto';
 
 @ApiTags('User')
 @Controller('user')
@@ -34,10 +36,13 @@ export class UserController {
   @ApiResponse({
     status: HttpStatus.OK,
     description: '현재 로그인되어 있는 유저를 조회합니다.',
+    type: GetUserDto,
   })
   @ApiParam({ name: 'id', required: true, description: '유저 UUID' })
-  find(@Param('id') id: string) {
-    return this.userService.find(id);
+  async find(@Param('id') id: string) {
+    const result = await this.userService.findById(id);
+    result.password = undefined;
+    return result;
   }
 
   @Patch(':id')
@@ -49,13 +54,21 @@ export class UserController {
   @ApiResponse({
     status: HttpStatus.OK,
     description: '유저 정보를 수정합니다.',
+    type: GetUserDto,
   })
   @ApiParam({ name: 'id', required: true, description: '유저 UUID' })
   @ApiCookieAuth()
-  update(@Param('id') id: string, @Body() data: UpdateUserDto, @Req() req) {
+  async update(
+    @Param('id') id: string,
+    @Body() data: UpdateUserDto,
+    @Req() req,
+  ) {
     if (req.user.id != id)
       throw new HttpException(undefined, HttpStatus.UNAUTHORIZED);
-    return this.userService.update(id, data);
+    await this.userService.update(id, data);
+    const result = await this.userService.findById(id);
+    result.password = undefined;
+    return result;
   }
 
   @Delete(':id')
@@ -67,9 +80,10 @@ export class UserController {
   @ApiResponse({ status: HttpStatus.OK, description: '유저를 삭제합니다.' })
   @ApiParam({ name: 'id', required: true, description: '유저 UUID' })
   @ApiCookieAuth()
-  remove(@Param('id') id: string, @Req() req) {
+  async remove(@Param('id') id: string, @Req() req, @Res() res) {
     if (req.user.id != id)
       throw new HttpException(undefined, HttpStatus.UNAUTHORIZED);
-    return this.userService.remove(id);
+    await this.userService.remove(id);
+    res.sendStatus(HttpStatus.OK);
   }
 }

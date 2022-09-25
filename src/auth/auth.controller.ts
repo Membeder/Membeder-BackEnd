@@ -18,6 +18,8 @@ import {
   ApiTags,
 } from '@nestjs/swagger';
 import { LoginUserDto } from './dto/login-user.dto';
+import { GetUserDto } from '../user/dto/get-user.dto';
+import { UserTokenDto } from './dto/user-token.dto';
 
 @ApiTags('Auth')
 @Controller('auth')
@@ -33,6 +35,7 @@ export class AuthController {
   @ApiResponse({
     status: HttpStatus.OK,
     description: '현재 로그인되어 있는 유저를 조회합니다.',
+    type: GetUserDto,
   })
   @ApiCookieAuth()
   async getUser(@Req() req) {
@@ -49,6 +52,7 @@ export class AuthController {
   @ApiResponse({
     status: HttpStatus.CREATED,
     description: '회원가입을 하여 유저를 생성합니다.',
+    type: GetUserDto,
   })
   async signUp(@Body() user: CreateUserDto) {
     return this.authService.signUp(user);
@@ -61,8 +65,9 @@ export class AuthController {
     description: '이메일과 비밀번호를 이용하여 로그인을 합니다.',
   })
   @ApiResponse({
-    status: HttpStatus.OK,
+    status: HttpStatus.CREATED,
     description: '이메일과 비밀번호를 이용하여 로그인을 합니다.',
+    type: UserTokenDto,
   })
   async signIn(@Body() body: LoginUserDto, @Res() res, @Req() req) {
     const token = await this.authService.generateToken(req.user);

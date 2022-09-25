@@ -1,5 +1,6 @@
 import {
   IsEmail,
+  IsIn,
   IsInt,
   IsOptional,
   IsString,
@@ -18,12 +19,12 @@ export class CreateUserDto {
     example: 'email',
     required: true,
   })
-  @IsString()
+  @IsIn(['google', 'email'])
   type: 'google' | 'email';
 
   @ApiProperty({
     description: '이름',
-    example: '윤도현',
+    example: '홍길동',
     required: true,
   })
   @IsString()
@@ -32,7 +33,7 @@ export class CreateUserDto {
 
   @ApiProperty({
     description: '닉네임',
-    example: '윤도현',
+    example: '나는야홍길동',
     required: true,
   })
   @IsString()
@@ -89,7 +90,7 @@ export class CreateUserDto {
 
   @ApiProperty({
     description: '한줄 소개',
-    example: '안녕하세요 저는 백엔드 개발을 하고 있는 윤도현이라고 합니다.',
+    example: '안녕하세요 저는 백엔드 개발을 하고 있는 홍길동이라고 합니다.',
     required: false,
   })
   @IsOptional()
