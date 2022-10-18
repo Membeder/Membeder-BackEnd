@@ -73,7 +73,6 @@ export class AuthService {
         HttpStatus.BAD_REQUEST,
       );
     const data = await this.createUser(user);
-    data.password = undefined;
     return data;
   }
 

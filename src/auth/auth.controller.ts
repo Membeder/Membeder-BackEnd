@@ -20,8 +20,8 @@ import {
   ApiTags,
 } from '@nestjs/swagger';
 import { LoginUserDto } from './dto/login-user.dto';
-import { GetUserDto } from '../user/dto/get-user.dto';
-import { UserLoginDto } from './dto/user-login.dto';
+import { UserInfoDto } from './dto/user-info.dto';
+import { UserInfoTokenDto } from './dto/user-info-token.dto';
 
 @ApiTags('Auth')
 @Controller('auth')
@@ -37,12 +37,12 @@ export class AuthController {
   @ApiResponse({
     status: HttpStatus.OK,
     description: '현재 로그인되어 있는 유저를 조회합니다.',
-    type: GetUserDto,
+    type: UserInfoDto,
   })
   @ApiCookieAuth()
   async getUser(@Req() req) {
     req.user.password = undefined;
-    return req.user;
+    return { user: req.user };
   }
 
   @Post('/signup')
@@ -54,10 +54,12 @@ export class AuthController {
   @ApiResponse({
     status: HttpStatus.CREATED,
     description: '회원가입을 하여 유저를 생성합니다.',
-    type: GetUserDto,
+    type: UserInfoDto,
   })
   async signUp(@Body() user: CreateUserDto) {
-    return this.authService.signUp(user);
+    const result = await this.authService.signUp(user);
+    result.password = undefined;
+    return { user: result };
   }
 
   @Post()
@@ -69,14 +71,14 @@ export class AuthController {
   @ApiResponse({
     status: HttpStatus.CREATED,
     description: '이메일과 비밀번호를 이용하여 로그인을 합니다.',
-    type: UserLoginDto,
+    type: UserInfoTokenDto,
   })
   async signIn(@Body() body: LoginUserDto, @Res() res, @Req() req) {
     const token = await this.authService.generateToken(req.user);
     res.cookie('Authentication', token.accessToken);
     req.user.password = undefined;
     res.send({
-      ...req.user,
+      user: req.user,
       ...token,
     });
   }

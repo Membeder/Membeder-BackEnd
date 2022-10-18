@@ -1,7 +1,7 @@
+import { UserInfoDto } from './user-info.dto';
 import { ApiProperty } from '@nestjs/swagger';
-import { GetUserDto } from '../../user/dto/get-user.dto';
 
-export class UserLoginDto extends GetUserDto {
+export class UserInfoTokenDto extends UserInfoDto {
   @ApiProperty({ description: '유저 Access Token' })
   accessToken: string;
 }
