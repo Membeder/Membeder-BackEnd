@@ -14,20 +14,6 @@ jobs:
     name: Build
     runs-on: ubuntu-latest
     steps:
-      - name: Setting .env
-        run: |
-          echo "SERVER_PORT=${{ secrets.SERVER_PORT }}" >> .env
-          echo "DB_HOST=${{ secrets.DB_HOST }}" >> .env
-          echo "DB_PORT=${{ secrets.DB_PORT }}" >> .env
-          echo "DB_USERNAME=${{ secrets.DB_USERNAME }}" >> .env
-          echo "DB_PASSWORD=${{ secrets.DB_PASSWORD }}" >> .env
-          echo "DB_NAME=${{ secrets.DB_NAME }}" >> .env
-          echo "OAUTH_GOOGLE_ID=${{ secrets.OAUTH_GOOGLE_ID }}" >> .env
-          echo "OAUTH_GOOGLE_SECRET=${{ secrets.OAUTH_GOOGLE_SECRET }}" >> .env
-          echo "OAUTH_GOOGLE_REDIRECT=${{ secrets.OAUTH_GOOGLE_REDIRECT }}" >> .env
-          echo "ACCESS_TOKEN_SECRET=${{ secrets.ACCESS_TOKEN_SECRET }}" >> .env
-          echo "ACCESS_TOKEN_EXPIRES_IN=${{ secrets.ACCESS_TOKEN_EXPIRES_IN }}" >> .env
-          cat .env
       - uses: actions/checkout@v2
       - name: Set up docker buildx
         id: buildx
@@ -63,7 +49,24 @@ jobs:
           registry: ghcr.io
           username: f1n2
           password: ${{ secrets.GHCR_TOKEN }}
+      - name: Setting .env
+        run: |
+          echo "SERVER_PORT=${{ secrets.SERVER_PORT }}" >> .env
+          echo "DB_HOST=${{ secrets.DB_HOST }}" >> .env
+          echo "DB_PORT=${{ secrets.DB_PORT }}" >> .env
+          echo "DB_USERNAME=${{ secrets.DB_USERNAME }}" >> .env
+          echo "DB_PASSWORD=${{ secrets.DB_PASSWORD }}" >> .env
+          echo "DB_NAME=${{ secrets.DB_NAME }}" >> .env
+          echo "OAUTH_GOOGLE_ID=${{ secrets.OAUTH_GOOGLE_ID }}" >> .env
+          echo "OAUTH_GOOGLE_SECRET=${{ secrets.OAUTH_GOOGLE_SECRET }}" >> .env
+          echo "OAUTH_GOOGLE_REDIRECT=${{ secrets.OAUTH_GOOGLE_REDIRECT }}" >> .env
+          echo "ACCESS_TOKEN_SECRET=${{ secrets.ACCESS_TOKEN_SECRET }}" >> .env
+          echo "ACCESS_TOKEN_EXPIRES_IN=${{ secrets.ACCESS_TOKEN_EXPIRES_IN }}" >> .env
+          cat .env
       - name: Docker run
         run: |
           docker stop ${{ env.NAME }} && docker rm ${{ env.NAME }} && docker rmi ${{ env.DOCKER_IMAGE }}:latest
-          docker run -d -p 3000:3000 --name membeder-backend --restart always ${{ env.DOCKER_IMAGE }}:latest
+          docker run -d -p 3000:3000 --env-file=.env --name membeder-backend --restart always ${{ env.DOCKER_IMAGE }}:latest
+      - name: Remove .env file
+        run: |
+          rm -rf .env
