@@ -1,7 +1,9 @@
 import {
+  Body,
   Controller,
   Get,
   HttpStatus,
+  Post,
   Req,
   Res,
   UseGuards,
@@ -10,6 +12,7 @@ import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { AuthGuard } from '@nestjs/passport';
 import { GoogleService } from './google.service';
 import { GoogleProfileDto } from './dto/google-profile.dto';
+import { GoogleVerifyDto } from './dto/google-verify.dto';
 
 @ApiTags('Google')
 @Controller('google')
@@ -28,6 +31,25 @@ export class GoogleController {
   })
   // eslint-disable-next-line @typescript-eslint/no-unused-vars,@typescript-eslint/no-empty-function
   async auth(@Req() req) {}
+
+  @Post('/')
+  @ApiOperation({
+    summary: '구글 로그인 인증',
+    description:
+      '구글에서 받은 ID Token으로 구글 인증 여부를 확인하고 회원가입 여부 및 토큰을 발급합니다.',
+  })
+  @ApiResponse({
+    status: HttpStatus.OK,
+    description:
+      '구글에서 받은 ID Token으로 구글 인증 여부를 확인하고 회원가입 여부 및 토큰을 발급합니다.',
+    type: GoogleProfileDto,
+  })
+  async verifyMobile(@Body() { idToken }: GoogleVerifyDto, @Res() res) {
+    const payload = await this.googleService.verifyIdToken(idToken);
+    const data = await this.googleService.callback(payload);
+    if (data.accessToken) res.cookie('Authentication', data.accessToken);
+    res.send(data);
+  }
 
   @Get('/callback')
   @UseGuards(AuthGuard('google'))
