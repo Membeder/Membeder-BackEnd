@@ -72,8 +72,7 @@ export class AuthService {
         'Nickname is already exist',
         HttpStatus.BAD_REQUEST,
       );
-    const data = await this.createUser(user);
-    return data;
+    return await this.createUser(user);
   }
 
   async generateToken(user: User): Promise<{ accessToken: string }> {
