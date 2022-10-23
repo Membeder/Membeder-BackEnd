@@ -79,7 +79,7 @@ export class AuthController {
   @ApiResponse({
     status: HttpStatus.CREATED,
     description:
-      '이메일과 비밀번호를 이용하여 로그인을 하고 토큰을 출력합니다.',
+      '이메일과 비밀번호를 이용하여 로그인을 하고 토큰을 출력합니다. 토큰은 Cookie에서 Authorization에 넣어줍니다.',
     type: UserInfoTokenDto,
   })
   @ApiBadRequestResponse({

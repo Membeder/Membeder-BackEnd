@@ -47,7 +47,7 @@ export class GoogleController {
   @ApiResponse({
     status: HttpStatus.OK,
     description:
-      '구글에서 로그인하고 받은 값으로 회원가입 여부 및 토큰을 발급합니다.',
+      '구글에서 로그인하고 받은 값으로 회원가입 여부 및 토큰을 발급합니다. 토큰은 Cookie에서 Authorization에 넣어줍니다.',
     type: GoogleProfileDto,
   })
   async callback(@Req() req, @Res() res) {
@@ -65,7 +65,7 @@ export class GoogleController {
   @ApiResponse({
     status: HttpStatus.OK,
     description:
-      '구글 인증 여부를 확인하고 회원가입 여부 및 토큰을 출력합니다.',
+      '구글 인증 여부를 확인하고 회원가입 여부 및 토큰을 출력합니다. 토큰은 Cookie에서 Authorization에 넣어줍니다.',
     type: GoogleProfileDto,
   })
   @ApiUnauthorizedResponse({
