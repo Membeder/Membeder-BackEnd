@@ -12,8 +12,11 @@ export class UserService {
     private readonly userRepository: Repository<User>,
   ) {}
 
-  async create(data: CreateUserDto & { refreshToken?: string }): Promise<User> {
-    const newUser = this.userRepository.create(data);
+  async create(data: CreateUserDto): Promise<User> {
+    const newUser = this.userRepository.create({
+      ...data,
+      team: JSON.stringify(data.team),
+    });
     return await this.userRepository.save(newUser);
   }
 

@@ -1,4 +1,5 @@
 import {
+  IsArray,
   IsDate,
   IsEmail,
   IsIn,
@@ -13,7 +14,7 @@ import {
 import { Unique } from 'typeorm';
 import { User } from '../entities/user.entity';
 import { ApiProperty } from '@nestjs/swagger';
-import { Transform, Type } from 'class-transformer';
+import { Type } from 'class-transformer';
 
 export class CreateUserDto {
   @ApiProperty({
@@ -44,9 +45,19 @@ export class CreateUserDto {
   nickname: string;
 
   @ApiProperty({
+    description: '이메일',
+    example: 'test@gmail.com',
+    required: true,
+  })
+  @IsEmail()
+  @Validate(Unique, [User])
+  email: string;
+
+  @ApiProperty({
     description: '생년월일',
     required: true,
   })
+  @IsOptional()
   @IsDate()
   @Type(() => Date)
   birth: Date;
@@ -64,15 +75,6 @@ export class CreateUserDto {
   picture: string;
 
   @ApiProperty({
-    description: '이메일',
-    example: 'test@gmail.com',
-    required: true,
-  })
-  @IsEmail()
-  @Validate(Unique, [User])
-  email: string;
-
-  @ApiProperty({
     description: '비밀번호',
     example: '12345678',
     required: true,
@@ -87,6 +89,7 @@ export class CreateUserDto {
     example: '개발자',
     required: true,
   })
+  @IsOptional()
   @IsString()
   profession: string;
 
@@ -95,6 +98,7 @@ export class CreateUserDto {
     example: 3,
     required: true,
   })
+  @IsOptional()
   @IsInt()
   career: number;
 
@@ -137,4 +141,12 @@ export class CreateUserDto {
   @IsOptional()
   @IsString()
   department: string;
+
+  @ApiProperty({
+    description: '팀 목록',
+    example: ['팀 아이디', '팀 아이디 22'],
+    required: false,
+  })
+  @IsArray()
+  team: Array<string>;
 }

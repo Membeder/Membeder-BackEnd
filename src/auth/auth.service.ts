@@ -40,11 +40,10 @@ export class AuthService {
     const password = user.password
       ? await bcrypt.hash(user.password, 10)
       : user.password;
-    const newUser = await this.userService.create({
+    return await this.userService.create({
       ...user,
       password,
     });
-    return await this.userService.create(newUser);
   }
 
   async validate(email: string, password: string): Promise<User | null> {

@@ -25,14 +25,6 @@ export class User {
   @Column({ nullable: false, unique: true })
   nickname: string;
 
-  @ApiProperty({ description: '생년월일' })
-  @Column({ nullable: false })
-  birth: Date;
-
-  @ApiProperty({ description: '프로필 사진' })
-  @Column({ nullable: true })
-  picture: string;
-
   @ApiProperty({ description: '이메일' })
   @Column({ nullable: false, unique: true })
   email: string;
@@ -41,12 +33,20 @@ export class User {
   @Column({ nullable: true })
   password: string;
 
+  @ApiProperty({ description: '생년월일' })
+  @Column({ nullable: true })
+  birth: Date;
+
+  @ApiProperty({ description: '프로필 사진' })
+  @Column({ nullable: true })
+  picture: string;
+
   @ApiProperty({ description: '직종' })
-  @Column({ nullable: false })
+  @Column({ nullable: true })
   profession: string;
 
   @ApiProperty({ description: '경력' })
-  @Column({ nullable: false })
+  @Column({ nullable: true })
   career: number;
 
   @ApiProperty({ description: '웹사이트' })
@@ -64,6 +64,10 @@ export class User {
   @ApiProperty({ description: '분야' })
   @Column({ default: '' })
   department: string;
+
+  @ApiProperty({ description: '팀 목록' })
+  @Column({ default: '[]' })
+  team: string;
 
   @CreateDateColumn()
   created: Date;
