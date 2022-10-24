@@ -54,15 +54,6 @@ export class CreateUserDto {
   email: string;
 
   @ApiProperty({
-    description: '생년월일',
-    required: true,
-  })
-  @IsOptional()
-  @IsDate()
-  @Type(() => Date)
-  birth: Date;
-
-  @ApiProperty({
     description: '프로필 사진',
     example: 'URL',
     required: false,
@@ -73,6 +64,15 @@ export class CreateUserDto {
     return /^[\w-]+@([\w-]+\.)+[\w-]{2,4}$/.test(value);
   })
   picture: string;
+
+  @ApiProperty({
+    description: '생년월일',
+    required: false,
+  })
+  @IsOptional()
+  @IsDate()
+  @Type(() => Date)
+  birth: Date;
 
   @ApiProperty({
     description: '비밀번호',
@@ -87,7 +87,7 @@ export class CreateUserDto {
   @ApiProperty({
     description: '직종',
     example: '개발자',
-    required: true,
+    required: false,
   })
   @IsOptional()
   @IsString()
@@ -96,7 +96,7 @@ export class CreateUserDto {
   @ApiProperty({
     description: '경력',
     example: 3,
-    required: true,
+    required: false,
   })
   @IsOptional()
   @IsInt()
@@ -143,10 +143,11 @@ export class CreateUserDto {
   department: string;
 
   @ApiProperty({
-    description: '팀 목록',
-    example: ['팀 아이디', '팀 아이디 22'],
+    description: '팀 ID 목록',
+    example: ['1', '2'],
     required: false,
   })
+  @IsOptional()
   @IsArray()
   team: Array<string>;
 }
