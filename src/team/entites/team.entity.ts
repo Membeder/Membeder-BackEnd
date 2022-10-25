@@ -4,7 +4,6 @@ import {
   Entity,
   JoinTable,
   ManyToMany,
-  OneToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
   JoinColumn,
@@ -40,6 +39,10 @@ export class Team {
   @ManyToMany(() => User)
   @JoinTable({ name: 'team_member' })
   member: Promise<User[]>;
+
+  @ApiProperty({ description: '모집 인원' })
+  @Column({ default: '{"developer":0,"designer":0,"director":0}' })
+  applicant: string;
 
   @CreateDateColumn()
   created: Date;

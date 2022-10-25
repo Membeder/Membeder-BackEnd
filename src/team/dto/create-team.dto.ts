@@ -1,7 +1,14 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsBoolean, IsOptional, IsString, Validate } from 'class-validator';
+import {
+  IsBoolean,
+  IsObject,
+  IsOptional,
+  IsString,
+  Validate,
+} from 'class-validator';
 import { Unique } from 'typeorm';
 import { Team } from '../entites/team.entity';
+import { TeamApplicantDto } from './team-applicant.dto';
 
 export class CreateTeamDto {
   @ApiProperty({ description: '팀명', example: 'Membeder', required: true })
@@ -18,4 +25,9 @@ export class CreateTeamDto {
   @IsOptional()
   @IsString()
   image: string;
+
+  @ApiProperty({ description: '모집 인원', required: false })
+  @IsOptional()
+  @IsObject()
+  applicant: TeamApplicantDto;
 }

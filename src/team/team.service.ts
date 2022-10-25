@@ -24,6 +24,8 @@ export class TeamService {
       take: count,
     });
     return result.map((e: any) => {
+      e.applicant = JSON.parse(e.applicant);
+      // Remove Unused Value
       e.__owner__ =
         e.__member__ =
         e.__has_owner__ =
@@ -52,25 +54,39 @@ export class TeamService {
         'Team Name is already exist',
         HttpStatus.BAD_REQUEST,
       );
+
+    // Load User and Team
     const owner = await this.userRepository.findOne({ where: { id } });
-    const newTeam = this.teamRepository.create(data);
+    const newTeam = this.teamRepository.create({
+      ...data,
+      applicant: JSON.stringify(data.applicant),
+    });
+
+    // Set Team Relation
     newTeam.owner = Promise.resolve(owner);
     (await newTeam.member).push(owner);
     await this.teamRepository.save(newTeam);
+
+    //Set User Relation
     (await owner.team).push(await this.findById(newTeam.id));
     await this.userRepository.save(owner);
+
     return {
       ...newTeam,
+      applicant: JSON.parse(newTeam.applicant),
       owner: {
         ...(await newTeam.owner),
+        // Remove Password & Unused Value
         password: undefined,
         __team__: undefined,
         __has_team__: undefined,
       },
       member: (await newTeam.member).map((e: any) => {
+        // Remove Password & Unused Value
         e.password = e.__team__ = e.__has_team__ = undefined;
         return e;
       }),
+      // Remove Unused Value
       __owner__: undefined,
       __member__: undefined,
       __has_owner__: undefined,

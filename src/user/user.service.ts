@@ -4,7 +4,6 @@ import { DeepPartial, DeleteResult, Repository, UpdateResult } from 'typeorm';
 import { User } from './entities/user.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { FindUserDto } from './dto/find-user.dto';
-import { Team } from '../team/entites/team.entity';
 
 @Injectable()
 export class UserService {
@@ -35,6 +34,7 @@ export class UserService {
       take: count,
     });
     return result.map((e: any) => {
+      // Remove Unused Value
       e.__member__ = e.__has_member__ = undefined;
       return e;
     });

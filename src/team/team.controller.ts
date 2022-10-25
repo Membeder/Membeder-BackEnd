@@ -48,6 +48,7 @@ export class TeamController {
     const team = await this.teamService.findById(id);
     return {
       ...team,
+      applicant: JSON.parse(team.applicant),
       owner: { ...(await team.owner), password: undefined },
       member: (await team.member).map((e) => {
         e.password = undefined;
