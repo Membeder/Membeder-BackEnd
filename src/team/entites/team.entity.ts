@@ -22,6 +22,10 @@ export class Team {
   @Column({ nullable: false, unique: true })
   name: string;
 
+  @ApiProperty({ description: '팀 설명' })
+  @Column({ nullable: false })
+  description: string;
+
   @ApiProperty({ description: '팀 공개 여부', required: false })
   @Column({ default: false })
   private: boolean;

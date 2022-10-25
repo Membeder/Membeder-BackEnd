@@ -16,6 +16,14 @@ export class CreateTeamDto {
   @IsString()
   name: string;
 
+  @ApiProperty({
+    description: '팀 설명',
+    example: 'Membeder입니다.',
+    required: true,
+  })
+  @IsString()
+  description: string;
+
   @ApiProperty({ description: '팀 공개 여부', example: false, required: false })
   @IsOptional()
   @IsBoolean()
