@@ -1,5 +1,4 @@
 import {
-  IsArray,
   IsDate,
   IsEmail,
   IsIn,
@@ -141,13 +140,4 @@ export class CreateUserDto {
   @IsOptional()
   @IsString()
   department: string;
-
-  @ApiProperty({
-    description: '팀 ID 목록',
-    example: ['1', '2'],
-    required: false,
-  })
-  @IsOptional()
-  @IsArray()
-  team: Array<string>;
 }

@@ -16,8 +16,9 @@ import { AuthGuard } from '@nestjs/passport';
 import {
   ApiBadRequestResponse,
   ApiCookieAuth,
+  ApiCreatedResponse,
+  ApiOkResponse,
   ApiOperation,
-  ApiResponse,
   ApiTags,
   ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
@@ -36,8 +37,7 @@ export class AuthController {
     summary: '현재 유저 조회',
     description: '현재 로그인되어 있는 유저를 조회합니다.',
   })
-  @ApiResponse({
-    status: HttpStatus.OK,
+  @ApiOkResponse({
     description: '현재 로그인되어 있는 경우 유저 정보를 출력합니다.',
     type: UserInfoDto,
   })
@@ -47,7 +47,7 @@ export class AuthController {
   @ApiCookieAuth()
   async getUser(@Req() req) {
     req.user.password = undefined;
-    return { user: { ...req.user, team: JSON.parse(req.user.team) } };
+    return { user: { ...req.user, team: await req.user.team } };
   }
 
   @Post('/signup')
@@ -56,8 +56,7 @@ export class AuthController {
     summary: '유저 회원가입',
     description: '회원가입을 하여 유저를 생성합니다.',
   })
-  @ApiResponse({
-    status: HttpStatus.CREATED,
+  @ApiCreatedResponse({
     description: '회원가입을 하여 유저를 생성하고 유저 정보를 출력합니다.',
     type: UserInfoDto,
   })
@@ -67,7 +66,7 @@ export class AuthController {
   async signUp(@Body() user: CreateUserDto) {
     const result = await this.authService.signUp(user);
     result.password = undefined;
-    return { user: { ...result, team: JSON.parse(result.team) } };
+    return { user: { ...result } };
   }
 
   @Post()
@@ -76,21 +75,19 @@ export class AuthController {
     summary: '유저 로그인',
     description: '이메일과 비밀번호를 이용하여 로그인을 합니다.',
   })
-  @ApiResponse({
-    status: HttpStatus.CREATED,
+  @ApiCreatedResponse({
     description:
       '이메일과 비밀번호를 이용하여 로그인을 하고 토큰을 출력합니다. 토큰은 Cookie에서 Authorization에 넣어줍니다.',
     type: UserInfoTokenDto,
   })
-  @ApiBadRequestResponse({
+  @ApiUnauthorizedResponse({
     description: '이메일이나 비밀번호가 일치하지 않는 경우 발생합니다.',
   })
   async signIn(@Body() body: LoginUserDto, @Res() res, @Req() req) {
     const token = await this.authService.generateToken(req.user);
     res.cookie('Authentication', token.accessToken);
-    req.user.password = undefined;
     res.send({
-      user: { ...req.user, team: JSON.parse(req.user.team) },
+      user: { ...req.user, team: await req.user.team },
       ...token,
     });
   }
@@ -101,10 +98,7 @@ export class AuthController {
     summary: '유저 로그아웃',
     description: '유저를 로그아웃합니다.',
   })
-  @ApiResponse({
-    status: HttpStatus.OK,
-    description: '유저를 로그아웃합니다.',
-  })
+  @ApiOkResponse({ description: '유저를 로그아웃합니다.' })
   @ApiUnauthorizedResponse({
     description: '로그인이 되어있지 않은 경우 발생합니다.',
   })

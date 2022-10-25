@@ -4,8 +4,12 @@ import {
   Entity,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
+  JoinTable,
+  OneToMany,
+  ManyToMany,
 } from 'typeorm';
 import { ApiProperty } from '@nestjs/swagger';
+import { Team } from '../../team/entites/team.entity';
 
 @Entity('user')
 export class User {
@@ -33,41 +37,42 @@ export class User {
   @Column({ nullable: true })
   password: string;
 
-  @ApiProperty({ description: '생년월일' })
+  @ApiProperty({ description: '생년월일', required: false })
   @Column({ nullable: true })
   birth: Date;
 
-  @ApiProperty({ description: '프로필 사진' })
+  @ApiProperty({ description: '프로필 사진', required: false })
   @Column({ nullable: true })
   picture: string;
 
-  @ApiProperty({ description: '직종' })
+  @ApiProperty({ description: '직종', required: false })
   @Column({ nullable: true })
   profession: string;
 
-  @ApiProperty({ description: '경력' })
+  @ApiProperty({ description: '경력', required: false })
   @Column({ nullable: true })
   career: number;
 
-  @ApiProperty({ description: '웹사이트' })
+  @ApiProperty({ description: '웹사이트', required: false })
   @Column({ default: '' })
   website: string;
 
-  @ApiProperty({ description: '한줄 소개' })
+  @ApiProperty({ description: '한줄 소개', required: false })
   @Column({ default: '' })
   introduce: string;
 
-  @ApiProperty({ description: '기술 스택' })
+  @ApiProperty({ description: '기술 스택', required: false })
   @Column({ default: '' })
   stack: string;
 
-  @ApiProperty({ description: '분야' })
+  @ApiProperty({ description: '분야', required: false })
   @Column({ default: '' })
   department: string;
 
-  @ApiProperty({ description: '팀 목록' })
-  @Column({ default: '[]' })
-  team: string;
+  @ApiProperty({ description: '팀 목록', type: () => [Team], example: [] })
+  @ManyToMany(() => Team)
+  @JoinTable({ name: 'user_team' })
+  team: Promise<Team[]>;
 
   @CreateDateColumn()
   created: Date;

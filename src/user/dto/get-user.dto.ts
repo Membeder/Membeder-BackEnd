@@ -1,5 +1,7 @@
 import { CreateUserDto } from './create-user.dto';
 import { ApiProperty } from '@nestjs/swagger';
+import { IsOptional } from 'class-validator';
+import { GetTeamDto } from '../../team/dto/get-team.dto';
 
 export class GetUserDto extends CreateUserDto {
   @ApiProperty({
@@ -7,6 +9,14 @@ export class GetUserDto extends CreateUserDto {
     example: '6cbd505e-3ca6-11ed-a261-0242ac120002',
   })
   id: string;
+
+  @ApiProperty({
+    description: '팀 목록',
+    type: () => [GetTeamDto],
+    example: [],
+  })
+  @IsOptional()
+  team: GetTeamDto[];
 
   @ApiProperty({ description: '계정 생성일' })
   created: Date;

@@ -4,6 +4,7 @@ import { DeepPartial, DeleteResult, Repository, UpdateResult } from 'typeorm';
 import { User } from './entities/user.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { FindUserDto } from './dto/find-user.dto';
+import { Team } from '../team/entites/team.entity';
 
 @Injectable()
 export class UserService {
@@ -13,10 +14,7 @@ export class UserService {
   ) {}
 
   async create(data: CreateUserDto): Promise<User> {
-    const newUser = this.userRepository.create({
-      ...data,
-      team: JSON.stringify(data.team),
-    });
+    const newUser = this.userRepository.create(data);
     return await this.userRepository.save(newUser);
   }
 
@@ -30,20 +28,28 @@ export class UserService {
       count = 5,
       sort = 'ASC',
     } = option;
-    return await this.userRepository.find({
+    const result = await this.userRepository.find({
       order: { created: sort },
       where: { id, name, nickname, email },
       skip: (page - 1) * count,
       take: count,
     });
+    return result.map((e: any) => {
+      e.__member__ = e.__has_member__ = undefined;
+      return e;
+    });
   }
 
   async findById(id: string): Promise<User | null> {
-    return await this.userRepository.findOne({ where: { id } });
+    return await this.userRepository.findOne({
+      where: { id },
+    });
   }
 
   async findByEmail(email: string): Promise<User | null> {
-    return await this.userRepository.findOne({ where: { email } });
+    return await this.userRepository.findOne({
+      where: { email },
+    });
   }
 
   async update(id: string, data: DeepPartial<User>): Promise<UpdateResult> {

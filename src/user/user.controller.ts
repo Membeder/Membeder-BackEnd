@@ -16,9 +16,9 @@ import { UpdateUserDto } from './dto/update-user.dto';
 import {
   ApiBadRequestResponse,
   ApiCookieAuth,
+  ApiOkResponse,
   ApiOperation,
   ApiParam,
-  ApiResponse,
   ApiTags,
   ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
@@ -35,18 +35,17 @@ export class UserController {
     summary: '유저 조회',
     description: '유저 UUID를 이용하여 유저를 조회합니다.',
   })
-  @ApiResponse({
-    status: HttpStatus.OK,
+  @ApiOkResponse({
     description: '유저 UUID를 이용하여 유저 정보를 출력합니다.',
     type: GetUserDto,
   })
   @ApiBadRequestResponse({ description: '유저 정보가 없는 경우 발생합니다.' })
   @ApiParam({ name: 'id', required: true, description: '유저 UUID' })
-  async find(@Param('id') id: string, @Res() res) {
+  async get(@Param('id') id: string) {
     const user = await this.userService.findById(id);
     if (user) {
       user.password = undefined;
-      res.send(user);
+      return { ...user, team: await user.team };
     } else {
       throw new HttpException(
         'User information not found.',
@@ -61,8 +60,7 @@ export class UserController {
     summary: '유저 정보 수정',
     description: '유저 정보를 수정합니다.',
   })
-  @ApiResponse({
-    status: HttpStatus.OK,
+  @ApiOkResponse({
     description: '유저 정보를 수정합니다.',
     type: GetUserDto,
   })
@@ -73,7 +71,7 @@ export class UserController {
   async update(@Body() data: UpdateUserDto, @Req() req) {
     await this.userService.update(req.user.id, {
       ...data,
-      team: JSON.stringify(data.team),
+      team: Promise.resolve(data.team),
     });
     const result = await this.userService.findById(req.user.id);
     result.password = undefined;
@@ -86,7 +84,7 @@ export class UserController {
     summary: '유저 삭제',
     description: '유저를 삭제합니다.',
   })
-  @ApiResponse({ status: HttpStatus.OK, description: '유저를 삭제합니다.' })
+  @ApiOkResponse({ description: '유저를 삭제합니다.' })
   @ApiUnauthorizedResponse({
     description: '로그인이 되어있지 않은 경우 발생합니다.',
   })
