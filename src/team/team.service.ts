@@ -51,7 +51,7 @@ export class TeamService {
     const existName = await this.find({ name: data.name });
     if (existName.length > 0)
       throw new HttpException(
-        'Team Name is already exist',
+        'Team Name is already exist.',
         HttpStatus.BAD_REQUEST,
       );
 
@@ -105,15 +105,107 @@ export class TeamService {
         'The team does not exist.',
         HttpStatus.BAD_REQUEST,
       );
-    const member = await team.member;
-    const owner = await team.owner;
-    if (!member.find((e) => e.id == user.id))
+    if (!(await team.member).find((e) => e.id == user.id))
       throw new HttpException(
-        'You are not team member',
+        'You are not team member.',
         HttpStatus.BAD_REQUEST,
       );
-    if (owner.id != user.id)
+    if ((await team.owner).id != user.id)
       throw new HttpException('You are not team owner.', HttpStatus.FORBIDDEN);
     return await this.teamRepository.delete({ id });
+  }
+
+  async addUser(team_id: string, user_id: string, now_user: User) {
+    const team = await this.findById(team_id);
+    if (!team)
+      throw new HttpException(
+        'The team does not exist.',
+        HttpStatus.BAD_REQUEST,
+      );
+    const user = await this.userRepository.findOne({ where: { id: user_id } });
+    if (!user)
+      throw new HttpException('The user is not exist.', HttpStatus.BAD_REQUEST);
+    if ((await team.member).find((e) => e.id == user_id))
+      throw new HttpException(
+        'The user is already exist in this team.',
+        HttpStatus.BAD_REQUEST,
+      );
+    if ((await team.owner).id != now_user.id)
+      throw new HttpException('You are not team owner.', HttpStatus.FORBIDDEN);
+    (await team.member).push(user);
+    await this.teamRepository.save(team);
+    (await user.team).push(await this.findById(team.id));
+    await this.userRepository.save(user);
+    return {
+      ...team,
+      applicant: JSON.parse(team.applicant),
+      owner: {
+        ...(await team.owner),
+        // Remove Password & Unused Value
+        password: undefined,
+        __team__: undefined,
+        __has_team__: undefined,
+      },
+      member: (await team.member).map((e: any) => {
+        // Remove Password & Unused Value
+        e.password = e.__team__ = e.__has_team__ = undefined;
+        return e;
+      }),
+      // Remove Unused Value
+      __owner__: undefined,
+      __member__: undefined,
+      __has_owner__: undefined,
+      __has_member__: undefined,
+    };
+  }
+
+  async removeUser(team_id: string, user_id: string, now_user: User) {
+    const team = await this.findById(team_id);
+    if (!team)
+      throw new HttpException(
+        'The team does not exist.',
+        HttpStatus.BAD_REQUEST,
+      );
+    const user = await this.userRepository.findOne({ where: { id: user_id } });
+    if (!user)
+      throw new HttpException('The user is not exist.', HttpStatus.BAD_REQUEST);
+    if (!(await team.member).find((e) => e.id == user_id))
+      throw new HttpException(
+        'The user is not exist in this team.',
+        HttpStatus.BAD_REQUEST,
+      );
+    if ((await team.owner).id != now_user.id)
+      throw new HttpException('You are not team owner.', HttpStatus.FORBIDDEN);
+    (await team.member).splice(
+      (await team.member).findIndex((e) => e.id == user.id),
+      1,
+    );
+    await this.teamRepository.save(team);
+    (await user.team).splice(
+      (await user.team).findIndex((e) => e.id == team.id),
+      1,
+    );
+    await this.userRepository.save(user);
+    return {
+      ...team,
+      applicant: JSON.parse(team.applicant),
+      owner: {
+        ...(await team.owner),
+        // Remove Password & Unused Value
+        password: undefined,
+        __team__: undefined,
+        __has_team__: undefined,
+      },
+      member: (await team.member).map((e: any) => {
+        // Remove Password & Unused Value
+        e.password = e.__team__ = e.__has_team__ = undefined;
+        return e;
+      }),
+      // Remove Unused Value
+      __owner__: undefined,
+      __member__: undefined,
+      __has_owner__: undefined,
+      __has_member__: undefined,
+    };
   }
 }

@@ -25,6 +25,7 @@ import { TeamService } from './team.service';
 import { GetTeamDto } from './dto/get-team.dto';
 import { CreateTeamDto } from './dto/create-team.dto';
 import { AuthGuard } from '@nestjs/passport';
+import { User } from '../user/entities/user.entity';
 
 @ApiTags('Team')
 @Controller('team')
@@ -95,5 +96,63 @@ export class TeamController {
   async remove(@Param('id') id: string, @Req() req, @Res() res) {
     await this.teamService.remove(id, req.user);
     return res.sendStatus(HttpStatus.OK);
+  }
+
+  @Post('/:team_id/:user_id')
+  @UseGuards(AuthGuard('jwt'))
+  @ApiOperation({
+    summary: '팀원 추가',
+    description: '팀원을 추가합니다.',
+  })
+  @ApiOkResponse({
+    description: '성공적으로 팀윈이 추가됩니다.',
+    type: GetTeamDto,
+  })
+  @ApiBadRequestResponse({
+    description:
+      '팀이 존재하지 않거나 유저가 존재하지 않거나 유저가 이미 팀에 존재한다면 발생합니다.',
+  })
+  @ApiUnauthorizedResponse({
+    description: '로그인이 되어있지 않은 경우 발생합니다.',
+  })
+  @ApiForbiddenResponse({ description: '팀장이 아닌 경우 발생합니다.' })
+  @ApiParam({ name: 'team_id', required: true, description: '팀 UUID' })
+  @ApiParam({ name: 'user_id', required: true, description: '유저 UUID' })
+  @ApiCookieAuth()
+  async addUser(
+    @Param('team_id') team_id: string,
+    @Param('user_id') user_id: string,
+    @Req() req,
+  ) {
+    return this.teamService.addUser(team_id, user_id, req.user);
+  }
+
+  @Delete('/:team_id/:user_id')
+  @UseGuards(AuthGuard('jwt'))
+  @ApiOperation({
+    summary: '팀원 제거',
+    description: '팀원을 제거합니다.',
+  })
+  @ApiOkResponse({
+    description: '성공적으로 팀윈이 제거됩니다.',
+    type: GetTeamDto,
+  })
+  @ApiBadRequestResponse({
+    description:
+      '팀이 존재하지 않거나 유저가 존재하지 않거나 유저가 팀에 존재하지 않는다면 발생합니다.',
+  })
+  @ApiUnauthorizedResponse({
+    description: '로그인이 되어있지 않은 경우 발생합니다.',
+  })
+  @ApiForbiddenResponse({ description: '팀장이 아닌 경우 발생합니다.' })
+  @ApiParam({ name: 'team_id', required: true, description: '팀 UUID' })
+  @ApiParam({ name: 'user_id', required: true, description: '유저 UUID' })
+  @ApiCookieAuth()
+  async removeUser(
+    @Param('team_id') team_id: string,
+    @Param('user_id') user_id: string,
+    @Req() req,
+  ) {
+    return this.teamService.removeUser(team_id, user_id, req.user);
   }
 }
