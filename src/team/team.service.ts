@@ -163,7 +163,12 @@ export class TeamService {
     await this.userRepository.save(user);
     return {
       ...team,
-      applicant: await team.applicant,
+      applicant: {
+        ...(await team.applicant),
+        id: undefined,
+        created: undefined,
+        updated: undefined,
+      },
       owner: {
         ...(await team.owner),
         // Remove Password & Unused Value
@@ -215,7 +220,12 @@ export class TeamService {
     await this.userRepository.save(user);
     return {
       ...team,
-      applicant: await team.applicant,
+      applicant: {
+        ...(await team.applicant),
+        id: undefined,
+        created: undefined,
+        updated: undefined,
+      },
       owner: {
         ...(await team.owner),
         // Remove Password & Unused Value
