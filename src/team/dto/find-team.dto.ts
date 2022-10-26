@@ -14,6 +14,10 @@ export class FindTeamDto {
   name?: string;
 
   @IsOptional()
+  @IsIn(['developer', 'designer', 'director'])
+  applicant?: 'developer' | 'designer' | 'director';
+
+  @IsOptional()
   @IsInt()
   page?: number;
 

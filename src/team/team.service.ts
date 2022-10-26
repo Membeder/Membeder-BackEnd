@@ -5,6 +5,7 @@ import { Team } from './entites/team.entity';
 import { CreateTeamDto } from './dto/create-team.dto';
 import { FindTeamDto } from './dto/find-team.dto';
 import { User } from '../user/entities/user.entity';
+import { TeamApplicantService } from './team-applicant.service';
 
 @Injectable()
 export class TeamService {
@@ -13,6 +14,7 @@ export class TeamService {
     private readonly teamRepository: Repository<Team>,
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
+    private readonly teamApplicantService: TeamApplicantService,
   ) {}
 
   async find(option: FindTeamDto): Promise<Team[]> {
@@ -24,12 +26,21 @@ export class TeamService {
       take: count,
     });
     return result.map((e: any) => {
-      e.applicant = JSON.parse(e.applicant);
+      (async () => {
+        e.applicant = {
+          ...(await e.applicant),
+          id: undefined,
+          created: undefined,
+          updated: undefined,
+        };
+      })();
       // Remove Unused Value
       e.__owner__ =
         e.__member__ =
         e.__has_owner__ =
         e.__has_member__ =
+        e.__applicant__ =
+        e.__has_applicant__ =
           undefined;
       return e;
     });
@@ -59,10 +70,14 @@ export class TeamService {
     const owner = await this.userRepository.findOne({ where: { id } });
     const newTeam = this.teamRepository.create({
       ...data,
-      applicant: JSON.stringify(data.applicant),
+      applicant: null,
     });
 
+    // Create Team Applicant
+    const applicant = await this.teamApplicantService.create(data.applicant);
+
     // Set Team Relation
+    newTeam.applicant = Promise.resolve(applicant);
     newTeam.owner = Promise.resolve(owner);
     (await newTeam.member).push(owner);
     await this.teamRepository.save(newTeam);
@@ -73,7 +88,12 @@ export class TeamService {
 
     return {
       ...newTeam,
-      applicant: JSON.parse(newTeam.applicant),
+      applicant: {
+        ...(await newTeam.applicant),
+        id: undefined,
+        created: undefined,
+        updated: undefined,
+      },
       owner: {
         ...(await newTeam.owner),
         // Remove Password & Unused Value
@@ -89,8 +109,10 @@ export class TeamService {
       // Remove Unused Value
       __owner__: undefined,
       __member__: undefined,
+      __applicant__: undefined,
       __has_owner__: undefined,
       __has_member__: undefined,
+      __has_applicant__: undefined,
     };
   }
 
@@ -100,6 +122,7 @@ export class TeamService {
 
   async remove(id: string, user: User): Promise<DeleteResult> {
     const team = await this.findById(id);
+    const applicant_id = (await team.applicant).id;
     if (!team)
       throw new HttpException(
         'The team does not exist.',
@@ -112,7 +135,9 @@ export class TeamService {
       );
     if ((await team.owner).id != user.id)
       throw new HttpException('You are not team owner.', HttpStatus.FORBIDDEN);
-    return await this.teamRepository.delete({ id });
+    const result = await this.teamRepository.delete({ id });
+    await this.teamApplicantService.remove(applicant_id);
+    return result;
   }
 
   async addUser(team_id: string, user_id: string, now_user: User) {
@@ -138,7 +163,7 @@ export class TeamService {
     await this.userRepository.save(user);
     return {
       ...team,
-      applicant: JSON.parse(team.applicant),
+      applicant: await team.applicant,
       owner: {
         ...(await team.owner),
         // Remove Password & Unused Value
@@ -154,8 +179,10 @@ export class TeamService {
       // Remove Unused Value
       __owner__: undefined,
       __member__: undefined,
+      __applicant__: undefined,
       __has_owner__: undefined,
       __has_member__: undefined,
+      __has_applicant__: undefined,
     };
   }
 
@@ -188,7 +215,7 @@ export class TeamService {
     await this.userRepository.save(user);
     return {
       ...team,
-      applicant: JSON.parse(team.applicant),
+      applicant: await team.applicant,
       owner: {
         ...(await team.owner),
         // Remove Password & Unused Value
@@ -204,8 +231,10 @@ export class TeamService {
       // Remove Unused Value
       __owner__: undefined,
       __member__: undefined,
+      __applicant__: undefined,
       __has_owner__: undefined,
       __has_member__: undefined,
+      __has_applicant__: undefined,
     };
   }
 }

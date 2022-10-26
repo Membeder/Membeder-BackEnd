@@ -25,7 +25,6 @@ import { TeamService } from './team.service';
 import { GetTeamDto } from './dto/get-team.dto';
 import { CreateTeamDto } from './dto/create-team.dto';
 import { AuthGuard } from '@nestjs/passport';
-import { User } from '../user/entities/user.entity';
 
 @ApiTags('Team')
 @Controller('team')
@@ -49,10 +48,15 @@ export class TeamController {
     const team = await this.teamService.findById(id);
     return {
       ...team,
-      applicant: JSON.parse(team.applicant),
+      applicant: {
+        ...(await team.applicant),
+        id: undefined,
+        created: undefined,
+        updated: undefined,
+      },
       owner: { ...(await team.owner), password: undefined },
-      member: (await team.member).map((e) => {
-        e.password = undefined;
+      member: (await team.member).map((e: any) => {
+        e.password = e.__team__ = e.__has_team__ = undefined;
         return e;
       }),
     };

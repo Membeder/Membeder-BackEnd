@@ -11,6 +11,7 @@ import {
 } from 'typeorm';
 import { ApiProperty } from '@nestjs/swagger';
 import { User } from '../../user/entities/user.entity';
+import { TeamApplicant } from './team-applicant.entity';
 
 @Entity('team')
 export class Team {
@@ -44,9 +45,10 @@ export class Team {
   @JoinTable({ name: 'team_member' })
   member: Promise<User[]>;
 
-  @ApiProperty({ description: '모집 인원' })
-  @Column({ default: '{"developer":0,"designer":0,"director":0}' })
-  applicant: string;
+  @ApiProperty({ description: '모집 인원', type: () => TeamApplicant })
+  @ManyToOne(() => TeamApplicant)
+  @JoinColumn({ name: 'applicant_id' })
+  applicant: Promise<TeamApplicant>;
 
   @CreateDateColumn()
   created: Date;
