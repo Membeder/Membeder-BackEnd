@@ -14,11 +14,13 @@ import {
 import { UserService } from './user.service';
 import { UpdateUserDto } from './dto/update-user.dto';
 import {
+  ApiBadRequestResponse,
   ApiCookieAuth,
+  ApiOkResponse,
   ApiOperation,
   ApiParam,
-  ApiResponse,
   ApiTags,
+  ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
 import { AuthGuard } from '@nestjs/passport';
 import { GetUserDto } from './dto/get-user.dto';
@@ -33,62 +35,62 @@ export class UserController {
     summary: '유저 조회',
     description: '유저 UUID를 이용하여 유저를 조회합니다.',
   })
-  @ApiResponse({
-    status: HttpStatus.OK,
-    description: '현재 로그인되어 있는 유저를 조회합니다.',
+  @ApiOkResponse({
+    description: '유저 UUID를 이용하여 유저 정보를 출력합니다.',
     type: GetUserDto,
   })
+  @ApiBadRequestResponse({ description: '유저 정보가 없는 경우 발생합니다.' })
   @ApiParam({ name: 'id', required: true, description: '유저 UUID' })
-  async find(@Param('id') id: string, @Res() res) {
+  async get(@Param('id') id: string) {
     const user = await this.userService.findById(id);
     if (user) {
       user.password = undefined;
-      res.send(user);
+      return { ...user, team: await user.team };
     } else {
-      res.status(HttpStatus.BAD_REQUEST);
-      res.send({ statusCode: HttpStatus.BAD_REQUEST });
+      throw new HttpException(
+        'User information not found.',
+        HttpStatus.BAD_REQUEST,
+      );
     }
   }
 
-  @Patch(':id')
+  @Patch()
   @UseGuards(AuthGuard('jwt'))
   @ApiOperation({
     summary: '유저 정보 수정',
     description: '유저 정보를 수정합니다.',
   })
-  @ApiResponse({
-    status: HttpStatus.OK,
+  @ApiOkResponse({
     description: '유저 정보를 수정합니다.',
     type: GetUserDto,
   })
-  @ApiParam({ name: 'id', required: true, description: '유저 UUID' })
+  @ApiUnauthorizedResponse({
+    description: '로그인이 되어있지 않은 경우 발생합니다.',
+  })
   @ApiCookieAuth()
-  async update(
-    @Param('id') id: string,
-    @Body() data: UpdateUserDto,
-    @Req() req,
-  ) {
-    if (req.user.id != id)
-      throw new HttpException(undefined, HttpStatus.UNAUTHORIZED);
-    await this.userService.update(id, data);
-    const result = await this.userService.findById(id);
+  async update(@Body() data: UpdateUserDto, @Req() req) {
+    await this.userService.update(req.user.id, {
+      ...data,
+      team: Promise.resolve(data.team),
+    });
+    const result = await this.userService.findById(req.user.id);
     result.password = undefined;
     return result;
   }
 
-  @Delete(':id')
+  @Delete()
   @UseGuards(AuthGuard('jwt'))
   @ApiOperation({
     summary: '유저 삭제',
     description: '유저를 삭제합니다.',
   })
-  @ApiResponse({ status: HttpStatus.OK, description: '유저를 삭제합니다.' })
-  @ApiParam({ name: 'id', required: true, description: '유저 UUID' })
+  @ApiOkResponse({ description: '유저를 삭제합니다.' })
+  @ApiUnauthorizedResponse({
+    description: '로그인이 되어있지 않은 경우 발생합니다.',
+  })
   @ApiCookieAuth()
-  async remove(@Param('id') id: string, @Req() req, @Res() res) {
-    if (req.user.id != id)
-      throw new HttpException(undefined, HttpStatus.UNAUTHORIZED);
-    await this.userService.remove(id);
+  async remove(@Req() req, @Res() res) {
+    await this.userService.remove(req.user.id);
     res.sendStatus(HttpStatus.OK);
   }
 }

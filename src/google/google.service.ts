@@ -44,6 +44,12 @@ export class GoogleService {
         audience: client_id,
       });
       const payload = ticket.getPayload();
+      payload.iss =
+        payload.azp =
+        payload.aud =
+        payload.iat =
+        payload.exp =
+          undefined;
       return payload as GoogleProfile;
     } catch (e) {
       throw new HttpException(

@@ -13,7 +13,7 @@ import {
 import { Unique } from 'typeorm';
 import { User } from '../entities/user.entity';
 import { ApiProperty } from '@nestjs/swagger';
-import { Transform, Type } from 'class-transformer';
+import { Type } from 'class-transformer';
 
 export class CreateUserDto {
   @ApiProperty({
@@ -44,12 +44,13 @@ export class CreateUserDto {
   nickname: string;
 
   @ApiProperty({
-    description: '생년월일',
+    description: '이메일',
+    example: 'test@gmail.com',
     required: true,
   })
-  @IsDate()
-  @Type(() => Date)
-  birth: Date;
+  @IsEmail()
+  @Validate(Unique, [User])
+  email: string;
 
   @ApiProperty({
     description: '프로필 사진',
@@ -64,13 +65,13 @@ export class CreateUserDto {
   picture: string;
 
   @ApiProperty({
-    description: '이메일',
-    example: 'test@gmail.com',
-    required: true,
+    description: '생년월일',
+    required: false,
   })
-  @IsEmail()
-  @Validate(Unique, [User])
-  email: string;
+  @IsOptional()
+  @IsDate()
+  @Type(() => Date)
+  birth: Date;
 
   @ApiProperty({
     description: '비밀번호',
@@ -85,16 +86,18 @@ export class CreateUserDto {
   @ApiProperty({
     description: '직종',
     example: '개발자',
-    required: true,
+    required: false,
   })
+  @IsOptional()
   @IsString()
   profession: string;
 
   @ApiProperty({
     description: '경력',
     example: 3,
-    required: true,
+    required: false,
   })
+  @IsOptional()
   @IsInt()
   career: number;
 

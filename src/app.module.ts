@@ -4,6 +4,7 @@ import { UserModule } from './user/user.module';
 import { AuthModule } from './auth/auth.module';
 import { DatabaseModule } from './database.module';
 import { GoogleModule } from './google/google.module';
+import { TeamModule } from './team/team.module';
 
 @Module({
   imports: [
@@ -14,6 +15,7 @@ import { GoogleModule } from './google/google.module';
     DatabaseModule,
     UserModule,
     AuthModule,
+    TeamModule,
     GoogleModule,
   ],
 })
