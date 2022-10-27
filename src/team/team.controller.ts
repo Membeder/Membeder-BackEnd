@@ -49,16 +49,12 @@ export class TeamController {
     return {
       ...team,
       applicant: {
-        ...(await team.applicant),
+        ...team.applicant,
         id: undefined,
         created: undefined,
         updated: undefined,
       },
-      owner: { ...(await team.owner), password: undefined },
-      member: (await team.member).map((e: any) => {
-        e.password = e.__team__ = e.__has_team__ = undefined;
-        return e;
-      }),
+      owner: { ...team.owner, password: undefined },
     };
   }
 

@@ -69,10 +69,7 @@ export class UserController {
   })
   @ApiCookieAuth()
   async update(@Body() data: UpdateUserDto, @Req() req) {
-    await this.userService.update(req.user.id, {
-      ...data,
-      team: Promise.resolve(data.team),
-    });
+    await this.userService.update(req.user.id, data);
     const result = await this.userService.findById(req.user.id);
     result.password = undefined;
     return result;

@@ -87,7 +87,7 @@ export class AuthController {
     const token = await this.authService.generateToken(req.user);
     res.cookie('Authentication', token.accessToken);
     res.send({
-      user: { ...req.user, team: await req.user.team },
+      user: req.user,
       ...token,
     });
   }

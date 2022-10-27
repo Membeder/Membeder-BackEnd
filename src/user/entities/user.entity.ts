@@ -72,7 +72,7 @@ export class User {
   @ApiProperty({ description: '팀 목록', type: () => [Team], example: [] })
   @ManyToMany(() => Team)
   @JoinTable({ name: 'user_team' })
-  team: Promise<Team[]>;
+  team: Team[];
 
   @CreateDateColumn()
   created: Date;
