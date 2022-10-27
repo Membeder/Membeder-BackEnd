@@ -46,8 +46,7 @@ export class AuthController {
   })
   @ApiCookieAuth()
   async getUser(@Req() req) {
-    req.user.password = undefined;
-    return { user: { ...req.user, team: await req.user.team } };
+    return { user: req.user };
   }
 
   @Post('/signup')
@@ -65,8 +64,7 @@ export class AuthController {
   })
   async signUp(@Body() user: CreateUserDto) {
     const result = await this.authService.signUp(user);
-    result.password = undefined;
-    return { user: { ...result } };
+    return { user: result };
   }
 
   @Post()

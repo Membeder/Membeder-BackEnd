@@ -16,6 +16,7 @@ import {
   Get,
   HttpStatus,
   Param,
+  Patch,
   Post,
   Req,
   Res,
@@ -25,6 +26,7 @@ import { TeamService } from './team.service';
 import { GetTeamDto } from './dto/get-team.dto';
 import { CreateTeamDto } from './dto/create-team.dto';
 import { AuthGuard } from '@nestjs/passport';
+import { UpdateTeamDto } from './dto/update-team.dto';
 
 @ApiTags('Team')
 @Controller('team')
@@ -45,17 +47,7 @@ export class TeamController {
   @ApiParam({ name: 'id', required: true, description: '팀 UUID' })
   @ApiCookieAuth()
   async get(@Param('id') id: string) {
-    const team = await this.teamService.findById(id);
-    return {
-      ...team,
-      applicant: {
-        ...team.applicant,
-        id: undefined,
-        created: undefined,
-        updated: undefined,
-      },
-      owner: { ...team.owner, password: undefined },
-    };
+    return await this.teamService.findById(id);
   }
 
   @Post()
@@ -96,6 +88,29 @@ export class TeamController {
   async remove(@Param('id') id: string, @Req() req, @Res() res) {
     await this.teamService.remove(id, req.user);
     return res.sendStatus(HttpStatus.OK);
+  }
+
+  @Patch(':id')
+  @UseGuards(AuthGuard('jwt'))
+  @ApiOperation({
+    summary: '팀 수정',
+    description: '팀 정보를 수정합니다.',
+  })
+  @ApiOkResponse({
+    description: '성공적으로 팀 정보가 수정됩니다.',
+    type: GetTeamDto,
+  })
+  @ApiBadRequestResponse({
+    description: '팀이 존재하지 않는다면 발생합니다.',
+  })
+  @ApiUnauthorizedResponse({
+    description: '로그인이 되어있지 않은 경우 발생합니다.',
+  })
+  @ApiForbiddenResponse({ description: '팀장이 아닌 경우 발생합니다.' })
+  @ApiParam({ name: 'id', required: true, description: '팀 UUID' })
+  @ApiCookieAuth()
+  async update(@Param('id') id: string, @Body() body: UpdateTeamDto) {
+    return this.teamService.update(id, body);
   }
 
   @Post('/:team_id/:user_id')

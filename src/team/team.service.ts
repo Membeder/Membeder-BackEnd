@@ -1,6 +1,6 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { DeepPartial, Repository, UpdateResult } from 'typeorm';
+import { DeepPartial, Repository } from 'typeorm';
 import { Team } from './entites/team.entity';
 import { CreateTeamDto } from './dto/create-team.dto';
 import { FindTeamDto } from './dto/find-team.dto';
@@ -24,7 +24,7 @@ export class TeamService {
       where: { id, name },
       skip: (page - 1) * count,
       take: count,
-      relations: ['owner', 'applicant'],
+      relations: ['owner', 'member', 'applicant'],
     });
   }
 
@@ -62,24 +62,19 @@ export class TeamService {
     await this.teamRepository.save(newTeam);
     owner.team.push(await this.findById(newTeam.id));
     await this.userRepository.save(owner);
-    return {
-      ...newTeam,
-      owner: { ...newTeam.owner, team: undefined },
-      member: newTeam.member.map((e) => {
-        e.team = undefined;
-        return e;
-      }),
-      applicant: {
-        ...newTeam.applicant,
-        id: undefined,
-        created: undefined,
-        updated: undefined,
-      },
-    };
+    return newTeam;
   }
 
-  async update(id: string, data: DeepPartial<Team>): Promise<UpdateResult> {
-    return await this.teamRepository.update(id, data);
+  async update(id: string, data: DeepPartial<Team>): Promise<Team> {
+    if (data.applicant) {
+      const team = await this.findById(id);
+      await this.teamApplicantService.update(team.applicant.id, data.applicant);
+    }
+    await this.teamRepository.update(id, {
+      ...data,
+      applicant: undefined,
+    });
+    return await this.findById(id);
   }
 
   async remove(id: string, user: User): Promise<Team> {
@@ -99,20 +94,7 @@ export class TeamService {
       throw new HttpException('You are not team owner.', HttpStatus.FORBIDDEN);
     await this.teamRepository.delete({ id });
     await this.teamApplicantService.remove(applicant_id);
-    return {
-      ...team,
-      owner: { ...team.owner, team: undefined },
-      member: team.member.map((e) => {
-        e.team = undefined;
-        return e;
-      }),
-      applicant: {
-        ...team.applicant,
-        id: undefined,
-        created: undefined,
-        updated: undefined,
-      },
-    };
+    return team;
   }
 
   async addUser(
@@ -143,20 +125,7 @@ export class TeamService {
     await this.teamRepository.save(team);
     user.team.push(await this.findById(team.id));
     await this.userRepository.save(user);
-    return {
-      ...team,
-      owner: { ...team.owner, team: undefined },
-      member: team.member.map((e) => {
-        e.team = undefined;
-        return e;
-      }),
-      applicant: {
-        ...team.applicant,
-        id: undefined,
-        created: undefined,
-        updated: undefined,
-      },
-    };
+    return this.findById(team.id);
   }
 
   async removeUser(team_id: string, user_id: string, now_user: User) {
@@ -189,19 +158,6 @@ export class TeamService {
       1,
     );
     await this.userRepository.save(user);
-    return {
-      ...team,
-      owner: { ...team.owner, team: undefined },
-      member: team.member.map((e) => {
-        e.team = undefined;
-        return e;
-      }),
-      applicant: {
-        ...team.applicant,
-        id: undefined,
-        created: undefined,
-        updated: undefined,
-      },
-    };
+    return this.findById(team.id);
   }
 }

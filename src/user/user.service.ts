@@ -27,16 +27,11 @@ export class UserService {
       count = 5,
       sort = 'ASC',
     } = option;
-    const result = await this.userRepository.find({
+    return await this.userRepository.find({
       order: { created: sort },
       where: { id, name, nickname, email },
       skip: (page - 1) * count,
       take: count,
-    });
-    return result.map((e: any) => {
-      // Remove Unused Value
-      e.__member__ = e.__has_member__ = undefined;
-      return e;
     });
   }
 
@@ -44,6 +39,22 @@ export class UserService {
     return await this.userRepository.findOne({
       where: { id },
       relations: ['team'],
+      select: [
+        'id',
+        'type',
+        'name',
+        'nickname',
+        'email',
+        'birth',
+        'picture',
+        'profession',
+        'career',
+        'website',
+        'introduce',
+        'stack',
+        'department',
+        'team',
+      ],
     });
   }
 
@@ -51,6 +62,22 @@ export class UserService {
     return await this.userRepository.findOne({
       where: { email },
       relations: ['team'],
+      select: [
+        'id',
+        'type',
+        'name',
+        'nickname',
+        'email',
+        'password',
+        'birth',
+        'picture',
+        'profession',
+        'career',
+        'website',
+        'introduce',
+        'stack',
+        'department',
+      ],
     });
   }
 
