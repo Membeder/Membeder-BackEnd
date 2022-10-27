@@ -38,17 +38,17 @@ export class Team {
   @ApiProperty({ description: '팀장', type: () => User })
   @ManyToOne(() => User)
   @JoinColumn({ name: 'owner_id' })
-  owner: Promise<User>;
+  owner: User;
 
   @ApiProperty({ description: '팀원', type: () => [User], example: [] })
   @ManyToMany(() => User)
   @JoinTable({ name: 'team_member' })
-  member: Promise<User[]>;
+  member: User[];
 
   @ApiProperty({ description: '모집 인원', type: () => TeamApplicant })
   @ManyToOne(() => TeamApplicant)
   @JoinColumn({ name: 'applicant_id' })
-  applicant: Promise<TeamApplicant>;
+  applicant: TeamApplicant;
 
   @CreateDateColumn()
   created: Date;

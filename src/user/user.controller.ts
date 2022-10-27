@@ -43,15 +43,12 @@ export class UserController {
   @ApiParam({ name: 'id', required: true, description: '유저 UUID' })
   async get(@Param('id') id: string) {
     const user = await this.userService.findById(id);
-    if (user) {
-      user.password = undefined;
-      return { ...user, team: await user.team };
-    } else {
+    if (user) return user;
+    else
       throw new HttpException(
         'User information not found.',
         HttpStatus.BAD_REQUEST,
       );
-    }
   }
 
   @Patch()
@@ -69,13 +66,8 @@ export class UserController {
   })
   @ApiCookieAuth()
   async update(@Body() data: UpdateUserDto, @Req() req) {
-    await this.userService.update(req.user.id, {
-      ...data,
-      team: Promise.resolve(data.team),
-    });
-    const result = await this.userService.findById(req.user.id);
-    result.password = undefined;
-    return result;
+    await this.userService.update(req.user.id, data);
+    return await this.userService.findById(req.user.id);
   }
 
   @Delete()
