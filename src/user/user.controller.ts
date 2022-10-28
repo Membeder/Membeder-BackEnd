@@ -23,7 +23,7 @@ import {
   ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
 import { AuthGuard } from '@nestjs/passport';
-import { GetUserDto } from './dto/get-user.dto';
+import { UserInfoDto } from '../auth/dto/user-info.dto';
 
 @ApiTags('User')
 @Controller('user')
@@ -37,13 +37,13 @@ export class UserController {
   })
   @ApiOkResponse({
     description: '유저 UUID를 이용하여 유저 정보를 출력합니다.',
-    type: GetUserDto,
+    type: UserInfoDto,
   })
   @ApiBadRequestResponse({ description: '유저 정보가 없는 경우 발생합니다.' })
   @ApiParam({ name: 'id', required: true, description: '유저 UUID' })
   async get(@Param('id') id: string) {
     const user = await this.userService.findById(id);
-    if (user) return user;
+    if (user) return { user };
     else
       throw new HttpException(
         'User information not found.',
@@ -59,7 +59,7 @@ export class UserController {
   })
   @ApiOkResponse({
     description: '유저 정보를 수정합니다.',
-    type: GetUserDto,
+    type: UserInfoDto,
   })
   @ApiUnauthorizedResponse({
     description: '로그인이 되어있지 않은 경우 발생합니다.',
@@ -67,7 +67,7 @@ export class UserController {
   @ApiCookieAuth()
   async update(@Body() data: UpdateUserDto, @Req() req) {
     await this.userService.update(req.user.id, data);
-    return await this.userService.findById(req.user.id);
+    return { user: await this.userService.findById(req.user.id) };
   }
 
   @Delete()
@@ -77,6 +77,9 @@ export class UserController {
     description: '유저를 삭제합니다.',
   })
   @ApiOkResponse({ description: '유저를 삭제합니다.' })
+  @ApiBadRequestResponse({
+    description: '유저가 소유한 팀이 있을 경우 발생합니다.',
+  })
   @ApiUnauthorizedResponse({
     description: '로그인이 되어있지 않은 경우 발생합니다.',
   })

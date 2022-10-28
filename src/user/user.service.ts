@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { DeepPartial, DeleteResult, Repository, UpdateResult } from 'typeorm';
 import { User } from './entities/user.entity';
@@ -38,7 +38,7 @@ export class UserService {
   async findById(id: string): Promise<User | null> {
     return await this.userRepository.findOne({
       where: { id },
-      relations: ['team'],
+      relations: ['team', 'team.owner'],
       select: [
         'id',
         'type',
@@ -61,7 +61,7 @@ export class UserService {
   async findByEmail(email: string): Promise<User | null> {
     return await this.userRepository.findOne({
       where: { email },
-      relations: ['team'],
+      relations: ['team', 'team.owner'],
       select: [
         'id',
         'type',
@@ -82,10 +82,18 @@ export class UserService {
   }
 
   async update(id: string, data: DeepPartial<User>): Promise<UpdateResult> {
-    return await this.userRepository.update(id, data);
+    return await this.userRepository.update({ id }, data);
   }
 
   async remove(id: string): Promise<DeleteResult> {
+    const user = await this.findById(id);
+    user.team.forEach((e) => {
+      if (e.owner.id == id)
+        throw new HttpException(
+          'Team owner cannot delete account',
+          HttpStatus.BAD_REQUEST,
+        );
+    });
     return await this.userRepository.delete({ id });
   }
 }
