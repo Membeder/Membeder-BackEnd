@@ -62,7 +62,7 @@ export class TeamService {
     await this.teamRepository.save(newTeam);
     owner.team.push(await this.findById(newTeam.id));
     await this.userRepository.save(owner);
-    return newTeam;
+    return this.findById(newTeam.id);
   }
 
   async update(id: string, data: DeepPartial<Team>): Promise<Team> {

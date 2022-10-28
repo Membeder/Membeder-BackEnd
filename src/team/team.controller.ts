@@ -47,7 +47,16 @@ export class TeamController {
   @ApiParam({ name: 'id', required: true, description: '팀 UUID' })
   @ApiCookieAuth()
   async get(@Param('id') id: string) {
-    return await this.teamService.findById(id);
+    const team = await this.teamService.findById(id);
+    return {
+      ...team,
+      applicant: {
+        ...team.applicant,
+        id: undefined,
+        created: undefined,
+        updated: undefined,
+      },
+    };
   }
 
   @Post()
@@ -66,7 +75,16 @@ export class TeamController {
   })
   @ApiCookieAuth()
   async create(@Body() body: CreateTeamDto, @Req() req) {
-    return await this.teamService.create(body, req.user.id);
+    const team = await this.teamService.create(body, req.user.id);
+    return {
+      ...team,
+      applicant: {
+        ...team.applicant,
+        id: undefined,
+        created: undefined,
+        updated: undefined,
+      },
+    };
   }
 
   @Delete(':id')
@@ -110,7 +128,16 @@ export class TeamController {
   @ApiParam({ name: 'id', required: true, description: '팀 UUID' })
   @ApiCookieAuth()
   async update(@Param('id') id: string, @Body() body: UpdateTeamDto) {
-    return this.teamService.update(id, body);
+    const team = await this.teamService.update(id, body);
+    return {
+      ...team,
+      applicant: {
+        ...team.applicant,
+        id: undefined,
+        created: undefined,
+        updated: undefined,
+      },
+    };
   }
 
   @Post('/:team_id/:user_id')
@@ -139,7 +166,16 @@ export class TeamController {
     @Param('user_id') user_id: string,
     @Req() req,
   ) {
-    return this.teamService.addUser(team_id, user_id, req.user);
+    const team = await this.teamService.addUser(team_id, user_id, req.user);
+    return {
+      ...team,
+      applicant: {
+        ...team.applicant,
+        id: undefined,
+        created: undefined,
+        updated: undefined,
+      },
+    };
   }
 
   @Delete('/:team_id/:user_id')
@@ -168,6 +204,15 @@ export class TeamController {
     @Param('user_id') user_id: string,
     @Req() req,
   ) {
-    return this.teamService.removeUser(team_id, user_id, req.user);
+    const team = await this.teamService.removeUser(team_id, user_id, req.user);
+    return {
+      ...team,
+      applicant: {
+        ...team.applicant,
+        id: undefined,
+        created: undefined,
+        updated: undefined,
+      },
+    };
   }
 }
