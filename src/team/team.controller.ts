@@ -50,12 +50,7 @@ export class TeamController {
     const team = await this.teamService.findById(id);
     return {
       ...team,
-      applicant: {
-        ...team.applicant,
-        id: undefined,
-        created: undefined,
-        updated: undefined,
-      },
+      applicant: { ...team.applicant, id: undefined },
     };
   }
 
@@ -78,12 +73,7 @@ export class TeamController {
     const team = await this.teamService.create(body, req.user.id);
     return {
       ...team,
-      applicant: {
-        ...team.applicant,
-        id: undefined,
-        created: undefined,
-        updated: undefined,
-      },
+      applicant: { ...team.applicant, id: undefined },
     };
   }
 
@@ -131,12 +121,7 @@ export class TeamController {
     const team = await this.teamService.update(id, body);
     return {
       ...team,
-      applicant: {
-        ...team.applicant,
-        id: undefined,
-        created: undefined,
-        updated: undefined,
-      },
+      applicant: { ...team.applicant, id: undefined },
     };
   }
 
@@ -169,12 +154,7 @@ export class TeamController {
     const team = await this.teamService.addUser(team_id, user_id, req.user);
     return {
       ...team,
-      applicant: {
-        ...team.applicant,
-        id: undefined,
-        created: undefined,
-        updated: undefined,
-      },
+      applicant: { ...team.applicant, id: undefined },
     };
   }
 
@@ -207,12 +187,7 @@ export class TeamController {
     const team = await this.teamService.removeUser(team_id, user_id, req.user);
     return {
       ...team,
-      applicant: {
-        ...team.applicant,
-        id: undefined,
-        created: undefined,
-        updated: undefined,
-      },
+      applicant: { ...team.applicant, id: undefined },
     };
   }
 }

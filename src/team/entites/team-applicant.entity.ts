@@ -23,10 +23,4 @@ export class TeamApplicant {
   @ApiProperty({ description: '기획자 모집 인원', required: false })
   @Column({ default: 0 })
   director: number;
-
-  @CreateDateColumn()
-  created: Date;
-
-  @UpdateDateColumn()
-  updated: Date;
 }
