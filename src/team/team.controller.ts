@@ -23,10 +23,10 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { TeamService } from './team.service';
-import { GetTeamDto } from './dto/get-team.dto';
 import { CreateTeamDto } from './dto/create-team.dto';
 import { AuthGuard } from '@nestjs/passport';
 import { UpdateTeamDto } from './dto/update-team.dto';
+import { TeamInfoDto } from './dto/team-info.dto';
 
 @ApiTags('Team')
 @Controller('team')
@@ -41,7 +41,7 @@ export class TeamController {
   })
   @ApiOkResponse({
     description: '팀 UUID를 이용하여 팀 정보를 출력합니다.',
-    type: GetTeamDto,
+    type: TeamInfoDto,
   })
   @ApiBadRequestResponse({ description: '팀 정보가 없는 경우 발생합니다.' })
   @ApiParam({ name: 'id', required: true, description: '팀 UUID' })
@@ -49,8 +49,10 @@ export class TeamController {
   async get(@Param('id') id: string) {
     const team = await this.teamService.findById(id);
     return {
-      ...team,
-      applicant: { ...team.applicant, id: undefined },
+      team: {
+        ...team,
+        applicant: { ...team.applicant, id: undefined },
+      },
     };
   }
 
@@ -62,7 +64,7 @@ export class TeamController {
   })
   @ApiCreatedResponse({
     description: '팀이 성공적으로 생성됩니다.',
-    type: GetTeamDto,
+    type: TeamInfoDto,
   })
   @ApiBadRequestResponse({ description: '팀 이름이 겹치는 경우 발생합니다.' })
   @ApiUnauthorizedResponse({
@@ -72,8 +74,10 @@ export class TeamController {
   async create(@Body() body: CreateTeamDto, @Req() req) {
     const team = await this.teamService.create(body, req.user.id);
     return {
-      ...team,
-      applicant: { ...team.applicant, id: undefined },
+      team: {
+        ...team,
+        applicant: { ...team.applicant, id: undefined },
+      },
     };
   }
 
@@ -106,7 +110,7 @@ export class TeamController {
   })
   @ApiOkResponse({
     description: '성공적으로 팀 정보가 수정됩니다.',
-    type: GetTeamDto,
+    type: TeamInfoDto,
   })
   @ApiBadRequestResponse({
     description: '팀이 존재하지 않는다면 발생합니다.',
@@ -120,8 +124,10 @@ export class TeamController {
   async update(@Param('id') id: string, @Body() body: UpdateTeamDto) {
     const team = await this.teamService.update(id, body);
     return {
-      ...team,
-      applicant: { ...team.applicant, id: undefined },
+      team: {
+        ...team,
+        applicant: { ...team.applicant, id: undefined },
+      },
     };
   }
 
@@ -133,7 +139,7 @@ export class TeamController {
   })
   @ApiOkResponse({
     description: '성공적으로 팀윈이 추가됩니다.',
-    type: GetTeamDto,
+    type: TeamInfoDto,
   })
   @ApiBadRequestResponse({
     description:
@@ -153,8 +159,10 @@ export class TeamController {
   ) {
     const team = await this.teamService.addUser(team_id, user_id, req.user);
     return {
-      ...team,
-      applicant: { ...team.applicant, id: undefined },
+      team: {
+        ...team,
+        applicant: { ...team.applicant, id: undefined },
+      },
     };
   }
 
@@ -166,7 +174,7 @@ export class TeamController {
   })
   @ApiOkResponse({
     description: '성공적으로 팀윈이 제거됩니다.',
-    type: GetTeamDto,
+    type: TeamInfoDto,
   })
   @ApiBadRequestResponse({
     description:
@@ -186,8 +194,10 @@ export class TeamController {
   ) {
     const team = await this.teamService.removeUser(team_id, user_id, req.user);
     return {
-      ...team,
-      applicant: { ...team.applicant, id: undefined },
+      team: {
+        ...team,
+        applicant: { ...team.applicant, id: undefined },
+      },
     };
   }
 }
