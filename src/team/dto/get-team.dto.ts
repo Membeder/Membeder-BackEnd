@@ -12,7 +12,7 @@ export class GetTeamDto extends CreateTeamDto {
   @ApiProperty({ description: '팀 공개 여부' })
   private: boolean;
 
-  @ApiProperty({ description: '팀장', type: () => GetUserDto, required: false })
+  @ApiProperty({ description: '팀장', type: () => GetUserDto })
   owner: GetUserDto;
 
   @ApiProperty({
