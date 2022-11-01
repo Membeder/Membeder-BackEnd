@@ -50,7 +50,7 @@ export class TeamService {
       );
     const owner = await this.userRepository.findOne({
       where: { id },
-      relations: ['owner', 'member', 'applicant'],
+      relations: ['team'],
     });
     const applicant = await this.teamApplicantService.create(data.applicant);
     const newTeam = this.teamRepository.create({
