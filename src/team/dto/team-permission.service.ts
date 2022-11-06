@@ -65,7 +65,6 @@ export class TeamPermissionService {
         HttpStatus.BAD_REQUEST,
       );
     const permission = await this.findById(team.permission.id);
-    console.log(user);
     permission.user.push(user);
     await this.teamPermissionRepository.save(permission);
     return await this.teamRepository.findOne({

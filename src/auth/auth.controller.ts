@@ -57,14 +57,19 @@ export class AuthController {
   })
   @ApiCreatedResponse({
     description: '회원가입을 하여 유저를 생성하고 유저 정보를 출력합니다.',
-    type: UserInfoDto,
+    type: UserInfoTokenDto,
   })
   @ApiBadRequestResponse({
     description: '이메일이나 닉네임이 이미 존재하는 경우 발생합니다.',
   })
-  async signUp(@Body() user: CreateUserDto) {
+  async signUp(@Body() user: CreateUserDto, @Req() req, @Res() res) {
     const result = await this.authService.signUp(user);
-    return { user: result };
+    const token = await this.authService.generateToken(result);
+    res.cookie('Authentication', token.accessToken);
+    res.send({
+      user: result,
+      ...token,
+    });
   }
 
   @Post()
