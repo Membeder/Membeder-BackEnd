@@ -59,9 +59,6 @@ export class CreateUserDto {
   })
   @IsOptional()
   @IsString()
-  @ValidateIf((object, value) => {
-    return /^[\w-]+@([\w-]+\.)+[\w-]{2,4}$/.test(value);
-  })
   picture: string;
 
   @ApiProperty({
