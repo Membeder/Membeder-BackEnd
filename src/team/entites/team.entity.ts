@@ -12,6 +12,7 @@ import {
 import { ApiProperty } from '@nestjs/swagger';
 import { User } from '../../user/entities/user.entity';
 import { TeamApplicant } from './team-applicant.entity';
+import { TeamPermission } from './team-permission.entity';
 
 @Entity('team')
 export class Team {
@@ -44,6 +45,11 @@ export class Team {
   @ManyToMany(() => User)
   @JoinTable({ name: 'team_member' })
   member: User[];
+
+  @ApiProperty({ description: '팀 권한', type: () => TeamPermission })
+  @ManyToOne(() => TeamPermission)
+  @JoinColumn({ name: 'team_permission' })
+  permission: TeamPermission;
 
   @ApiProperty({ description: '모집 인원', type: () => TeamApplicant })
   @ManyToOne(() => TeamApplicant)

@@ -52,6 +52,7 @@ export class TeamController {
       team: {
         ...team,
         applicant: { ...team.applicant, id: undefined },
+        permission: [...team.permission.user],
       },
     };
   }
@@ -77,6 +78,7 @@ export class TeamController {
       team: {
         ...team,
         applicant: { ...team.applicant, id: undefined },
+        permission: [...team.permission.user],
       },
     };
   }
@@ -127,6 +129,7 @@ export class TeamController {
       team: {
         ...team,
         applicant: { ...team.applicant, id: undefined },
+        permission: [...team.permission.user],
       },
     };
   }
@@ -157,11 +160,12 @@ export class TeamController {
     @Param('user_id') user_id: string,
     @Req() req,
   ) {
-    const team = await this.teamService.addUser(team_id, user_id, req.user);
+    const team = await this.teamService.addUser(team_id, user_id, req.user.id);
     return {
       team: {
         ...team,
         applicant: { ...team.applicant, id: undefined },
+        permission: [...team.permission.user],
       },
     };
   }
@@ -192,11 +196,16 @@ export class TeamController {
     @Param('user_id') user_id: string,
     @Req() req,
   ) {
-    const team = await this.teamService.removeUser(team_id, user_id, req.user);
+    const team = await this.teamService.removeUser(
+      team_id,
+      user_id,
+      req.user.id,
+    );
     return {
       team: {
         ...team,
         applicant: { ...team.applicant, id: undefined },
+        permission: [...team.permission.user],
       },
     };
   }

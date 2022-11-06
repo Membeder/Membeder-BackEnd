@@ -23,6 +23,14 @@ export class GetTeamDto extends CreateTeamDto {
   })
   member: GetUserDto[];
 
+  @ApiProperty({
+    description: '권한 팀원',
+    type: () => [GetUserDto],
+    example: [],
+    required: false,
+  })
+  permission: GetUserDto[];
+
   @ApiProperty({ description: '팀 생성일' })
   created: Date;
 
