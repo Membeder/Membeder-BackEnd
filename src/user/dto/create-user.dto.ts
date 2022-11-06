@@ -28,6 +28,8 @@ export class CreateUserDto {
     description: '이름',
     example: '홍길동',
     required: true,
+    minimum: 2,
+    maximum: 4,
   })
   @IsString()
   @Length(2, 4)
@@ -37,10 +39,12 @@ export class CreateUserDto {
     description: '닉네임',
     example: '나는야홍길동',
     required: true,
+    minimum: 3,
+    maximum: 8,
   })
   @IsString()
   @Validate(Unique, [User])
-  @Length(3, 16)
+  @Length(3, 8)
   nickname: string;
 
   @ApiProperty({
