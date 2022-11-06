@@ -6,6 +6,7 @@ import { DatabaseModule } from './database.module';
 import { GoogleModule } from './google/google.module';
 import { TeamModule } from './team/team.module';
 import { ScheduleModule } from './schedule/schedule.module';
+import { FileModule } from './file/file.module';
 
 @Module({
   imports: [
@@ -19,6 +20,7 @@ import { ScheduleModule } from './schedule/schedule.module';
     TeamModule,
     GoogleModule,
     ScheduleModule,
+    FileModule,
   ],
 })
 export class AppModule {}
