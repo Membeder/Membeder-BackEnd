@@ -6,6 +6,7 @@ import { CreateTeamDto } from './dto/create-team.dto';
 import { FindTeamDto } from './dto/find-team.dto';
 import { User } from '../user/entities/user.entity';
 import { TeamApplicantService } from './team-applicant.service';
+import { TeamPermissionService } from './dto/team-permission.service';
 
 @Injectable()
 export class TeamService {
@@ -15,6 +16,7 @@ export class TeamService {
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
     private readonly teamApplicantService: TeamApplicantService,
+    private readonly teamPermissionService: TeamPermissionService,
   ) {}
 
   async find(option: FindTeamDto): Promise<Team[]> {
@@ -24,14 +26,26 @@ export class TeamService {
       where: { id, name },
       skip: (page - 1) * count,
       take: count,
-      relations: ['owner', 'member', 'applicant'],
+      relations: [
+        'owner',
+        'member',
+        'applicant',
+        'permission',
+        'permission.user',
+      ],
     });
   }
 
   async findById(id: string): Promise<Team> {
     const team = await this.teamRepository.findOne({
       where: { id },
-      relations: ['owner', 'member', 'applicant'],
+      relations: [
+        'owner',
+        'member',
+        'applicant',
+        'permission',
+        'permission.user',
+      ],
     });
     if (team) return team;
     else
@@ -57,6 +71,7 @@ export class TeamService {
       ...data,
       owner,
       member: [owner],
+      permission: await this.teamPermissionService.create(),
       applicant,
     });
     await this.teamRepository.save(newTeam);
@@ -100,7 +115,7 @@ export class TeamService {
   async addUser(
     team_id: string,
     user_id: string,
-    now_user: User,
+    now_user_id: string,
   ): Promise<Team> {
     const team = await this.findById(team_id);
     if (!team)
@@ -119,7 +134,7 @@ export class TeamService {
         'The user is already exist in this team.',
         HttpStatus.BAD_REQUEST,
       );
-    if (team.owner.id != now_user.id)
+    if (team.owner.id != now_user_id)
       throw new HttpException('You are not team owner.', HttpStatus.FORBIDDEN);
     team.member.push(user);
     await this.teamRepository.save(team);
@@ -128,7 +143,7 @@ export class TeamService {
     return this.findById(team.id);
   }
 
-  async removeUser(team_id: string, user_id: string, now_user: User) {
+  async removeUser(team_id: string, user_id: string, now_user_id: string) {
     const team = await this.findById(team_id);
     if (!team)
       throw new HttpException(
@@ -146,7 +161,7 @@ export class TeamService {
         'The user is not exist in this team.',
         HttpStatus.BAD_REQUEST,
       );
-    if (team.owner.id != now_user.id)
+    if (team.owner.id != now_user_id)
       throw new HttpException('You are not team owner.', HttpStatus.FORBIDDEN);
     team.member.splice(
       team.member.findIndex((e) => e.id == user.id),
