@@ -1,9 +1,9 @@
 import { InjectRepository } from '@nestjs/typeorm';
-import { TeamPermission } from '../entites/team-permission.entity';
+import { TeamPermission } from './entites/team-permission.entity';
 import { Repository } from 'typeorm';
-import { UserService } from '../../user/user.service';
+import { UserService } from '../user/user.service';
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
-import { Team } from '../entites/team.entity';
+import { Team } from './entites/team.entity';
 
 @Injectable()
 export class TeamPermissionService {

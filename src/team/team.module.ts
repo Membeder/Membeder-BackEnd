@@ -8,7 +8,7 @@ import { User } from '../user/entities/user.entity';
 import { TeamApplicant } from './entites/team-applicant.entity';
 import { TeamApplicantService } from './team-applicant.service';
 import { TeamPermission } from './entites/team-permission.entity';
-import { TeamPermissionService } from './dto/team-permission.service';
+import { TeamPermissionService } from './team-permission.service';
 import { TeamPermissionController } from './team-permission.controller';
 
 @Module({

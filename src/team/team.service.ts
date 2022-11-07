@@ -6,7 +6,7 @@ import { CreateTeamDto } from './dto/create-team.dto';
 import { FindTeamDto } from './dto/find-team.dto';
 import { User } from '../user/entities/user.entity';
 import { TeamApplicantService } from './team-applicant.service';
-import { TeamPermissionService } from './dto/team-permission.service';
+import { TeamPermissionService } from './team-permission.service';
 
 @Injectable()
 export class TeamService {
@@ -32,6 +32,7 @@ export class TeamService {
         'applicant',
         'permission',
         'permission.user',
+        'schedule',
       ],
     });
   }
@@ -45,6 +46,7 @@ export class TeamService {
         'applicant',
         'permission',
         'permission.user',
+        'schedule',
       ],
     });
     if (team) return team;
@@ -73,6 +75,7 @@ export class TeamService {
       member: [owner],
       permission: await this.teamPermissionService.create(),
       applicant,
+      schedule: [],
     });
     await this.teamRepository.save(newTeam);
     owner.team.push(await this.findById(newTeam.id));

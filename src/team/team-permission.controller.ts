@@ -1,4 +1,4 @@
-import { TeamPermissionService } from './dto/team-permission.service';
+import { TeamPermissionService } from './team-permission.service';
 import {
   ApiBadRequestResponse,
   ApiCookieAuth,
