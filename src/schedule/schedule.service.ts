@@ -4,6 +4,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { CreateScheduleDto } from './dto/create-schedule.dto';
 import { Team } from '../team/entites/team.entity';
 import { HttpException, HttpStatus } from '@nestjs/common';
+import { UpdateScheduleDto } from './dto/update-schedule.dto';
 
 export class ScheduleService {
   constructor(
@@ -49,6 +50,38 @@ export class ScheduleService {
     await this.teamRepository.save(team);
     return this.scheduleRepository.findOne({
       where: { id: newSchedule.id },
+      relations: ['permission', 'permission.user'],
+    });
+  }
+
+  async update(
+    team_id: string,
+    schedule_id: string,
+    data: UpdateScheduleDto,
+    now_user_id: string,
+  ): Promise<Schedule> {
+    const team = await this.teamRepository.findOne({
+      where: { id: team_id },
+      relations: ['owner', 'permission', 'permission.user'],
+    });
+    const schedule = await this.scheduleRepository.findOne({
+      where: { id: schedule_id },
+    });
+    if (!team)
+      throw new HttpException('Team is not exist', HttpStatus.BAD_REQUEST);
+    if (
+      !team.permission.user.find((e) => e.id == now_user_id) &&
+      team.owner.id != now_user_id
+    )
+      throw new HttpException(
+        "You don't have permission.",
+        HttpStatus.FORBIDDEN,
+      );
+    if (!schedule)
+      throw new HttpException('Schedule is not exist', HttpStatus.BAD_REQUEST);
+    await this.scheduleRepository.update({ id: schedule_id }, data);
+    return await this.scheduleRepository.findOne({
+      where: { id: schedule_id },
       relations: ['permission', 'permission.user'],
     });
   }

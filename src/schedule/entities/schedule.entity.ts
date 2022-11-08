@@ -24,6 +24,10 @@ export class Schedule {
   @Column({ nullable: false })
   description: string;
 
+  @ApiProperty({ description: '달성 여부' })
+  @Column({ nullable: true, default: false })
+  complete: boolean;
+
   @CreateDateColumn()
   created: Date;
 
