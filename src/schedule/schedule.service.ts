@@ -85,4 +85,27 @@ export class ScheduleService {
       relations: ['permission', 'permission.user'],
     });
   }
+
+  async remove(team_id: string, schedule_id: string, now_user_id: string) {
+    const team = await this.teamRepository.findOne({
+      where: { id: team_id },
+      relations: ['owner', 'permission', 'permission.user'],
+    });
+    const schedule = await this.scheduleRepository.findOne({
+      where: { id: schedule_id },
+    });
+    if (!team)
+      throw new HttpException('Team is not exist', HttpStatus.BAD_REQUEST);
+    if (
+      !team.permission.user.find((e) => e.id == now_user_id) &&
+      team.owner.id != now_user_id
+    )
+      throw new HttpException(
+        "You don't have permission.",
+        HttpStatus.FORBIDDEN,
+      );
+    if (!schedule)
+      throw new HttpException('Schedule is not exist', HttpStatus.BAD_REQUEST);
+    await this.scheduleRepository.delete({ id: schedule_id });
+  }
 }

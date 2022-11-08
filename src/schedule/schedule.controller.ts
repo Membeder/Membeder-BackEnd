@@ -12,10 +12,13 @@ import {
 import {
   Body,
   Controller,
+  Delete,
+  HttpStatus,
   Param,
   Patch,
   Post,
   Req,
+  Res,
   UseGuards,
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
@@ -94,5 +97,33 @@ export class ScheduleController {
       ...data,
       permission: data.permission.user,
     };
+  }
+
+  @Delete('/:team_id/:schedule_id')
+  @UseGuards(AuthGuard('jwt'))
+  @ApiOperation({
+    summary: '일정 제거',
+    description: '일정을 제거합니다.',
+  })
+  @ApiOkResponse({
+    description: '성공적으로 일정이 제거됩니다.',
+  })
+  @ApiBadRequestResponse({
+    description: '팀이 존재하지 않거나 일정이 없는 경우 발생합니다.',
+  })
+  @ApiUnauthorizedResponse({
+    description: '로그인이 되어있지 않은 경우 발생합니다.',
+  })
+  @ApiParam({ name: 'team_id', required: true, description: '팀 UUID' })
+  @ApiParam({ name: 'schedule_id', required: true, description: '일정 UUID' })
+  @ApiCookieAuth()
+  async remove(
+    @Param('team_id') team_id: string,
+    @Param('schedule_id') schedule_id: string,
+    @Req() req,
+    @Res() res,
+  ) {
+    await this.scheduleService.remove(team_id, schedule_id, req.user.id);
+    res.sendStatus(HttpStatus.OK);
   }
 }
