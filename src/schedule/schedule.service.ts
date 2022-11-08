@@ -14,6 +14,19 @@ export class ScheduleService {
     private readonly teamRepository: Repository<Team>,
   ) {}
 
+  async get(team_id: string, schedule_id: string): Promise<Schedule> {
+    const team = await this.teamRepository.findOne({ where: { id: team_id } });
+    const schedule = await this.scheduleRepository.findOne({
+      where: { id: schedule_id },
+      relations: ['permission', 'permission.user'],
+    });
+    if (!team)
+      throw new HttpException('Team is not exist', HttpStatus.BAD_REQUEST);
+    if (!schedule)
+      throw new HttpException('Schedule is not exist', HttpStatus.BAD_REQUEST);
+    return schedule;
+  }
+
   async create(
     team_id: string,
     data: CreateScheduleDto,

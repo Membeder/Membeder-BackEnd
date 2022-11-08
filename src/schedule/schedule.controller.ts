@@ -13,6 +13,7 @@ import {
   Body,
   Controller,
   Delete,
+  Get,
   HttpStatus,
   Param,
   Patch,
@@ -30,6 +31,31 @@ import { UpdateScheduleDto } from './dto/update-schedule.dto';
 @Controller('schedule')
 export class ScheduleController {
   constructor(private readonly scheduleService: ScheduleService) {}
+
+  @Get('/:team_id/:schedule_id')
+  @ApiOperation({
+    summary: '일정 조회',
+    description: '일정을 조회합니다.',
+  })
+  @ApiOkResponse({
+    description: '성공적으로 일정이 조회됩니다.',
+    type: GetScheduleDto,
+  })
+  @ApiBadRequestResponse({
+    description: '팀이 존재하지 않는 경우 발생합니다.',
+  })
+  @ApiParam({ name: 'team_id', required: true, description: '팀 UUID' })
+  @ApiParam({ name: 'schedule_id', required: true, description: '일정 UUID' })
+  async get(
+    @Param('team_id') team_id: string,
+    @Param('schedule_id') schedule_id: string,
+  ) {
+    const data = await this.scheduleService.get(team_id, schedule_id);
+    return {
+      ...data,
+      permission: data.permission.user,
+    };
+  }
 
   @Post('/:team_id')
   @UseGuards(AuthGuard('jwt'))
