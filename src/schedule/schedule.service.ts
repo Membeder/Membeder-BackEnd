@@ -60,6 +60,9 @@ export class ScheduleService {
     });
     await this.scheduleRepository.save(newSchedule);
     team.schedule.push(newSchedule);
+    team.schedule = team.schedule.sort((o1, o2) => {
+      return +o1.deadline > +o2.deadline ? 1 : -1;
+    });
     await this.teamRepository.save(team);
     return this.scheduleRepository.findOne({
       where: { id: newSchedule.id },
