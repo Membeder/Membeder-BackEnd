@@ -46,7 +46,17 @@ export class AuthController {
   })
   @ApiCookieAuth()
   async getUser(@Req() req) {
-    return { user: req.user };
+    return {
+      user: {
+        ...req.user,
+        team: {
+          ...req.user.team,
+          schedule: req.user.team.schedule.sort((o1, o2) => {
+            return +o1.deadline > +o2.deadline ? 1 : -1;
+          }),
+        },
+      },
+    };
   }
 
   @Post('/signup')
@@ -90,7 +100,15 @@ export class AuthController {
     const token = await this.authService.generateToken(req.user);
     res.cookie('Authentication', token.accessToken);
     res.send({
-      user: req.user,
+      user: {
+        ...req.user,
+        team: {
+          ...req.user.team,
+          schedule: req.user.team.schedule.sort((o1, o2) => {
+            return +o1.deadline > +o2.deadline ? 1 : -1;
+          }),
+        },
+      },
       ...token,
     });
   }

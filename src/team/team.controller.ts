@@ -55,6 +55,9 @@ export class TeamController {
           ...e,
           applicant: { ...e.applicant, id: undefined },
           permission: [...e.permission.user],
+          schedule: e.schedule.sort((o1, o2) => {
+            return +o1.deadline > +o2.deadline ? 1 : -1;
+          }),
         };
       }),
     };
@@ -80,6 +83,9 @@ export class TeamController {
         ...team,
         applicant: { ...team.applicant, id: undefined },
         permission: [...team.permission.user],
+        schedule: team.schedule.sort((o1, o2) => {
+          return +o1.deadline > +o2.deadline ? 1 : -1;
+        }),
       },
     };
   }
@@ -106,6 +112,9 @@ export class TeamController {
         ...team,
         applicant: { ...team.applicant, id: undefined },
         permission: [...team.permission.user],
+        schedule: team.schedule.sort((o1, o2) => {
+          return +o1.deadline > +o2.deadline ? 1 : -1;
+        }),
       },
     };
   }
@@ -157,6 +166,9 @@ export class TeamController {
         ...team,
         applicant: { ...team.applicant, id: undefined },
         permission: [...team.permission.user],
+        schedule: team.schedule.sort((o1, o2) => {
+          return +o1.deadline > +o2.deadline ? 1 : -1;
+        }),
       },
     };
   }
@@ -193,6 +205,9 @@ export class TeamController {
         ...team,
         applicant: { ...team.applicant, id: undefined },
         permission: [...team.permission.user],
+        schedule: team.schedule.sort((o1, o2) => {
+          return +o1.deadline > +o2.deadline ? 1 : -1;
+        }),
       },
     };
   }
@@ -233,6 +248,9 @@ export class TeamController {
         ...team,
         applicant: { ...team.applicant, id: undefined },
         permission: [...team.permission.user],
+        schedule: team.schedule.sort((o1, o2) => {
+          return +o1.deadline > +o2.deadline ? 1 : -1;
+        }),
       },
     };
   }
