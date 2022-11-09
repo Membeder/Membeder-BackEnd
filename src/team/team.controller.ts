@@ -18,6 +18,7 @@ import {
   Param,
   Patch,
   Post,
+  Query,
   Req,
   Res,
   UseGuards,
@@ -27,11 +28,37 @@ import { CreateTeamDto } from './dto/create-team.dto';
 import { AuthGuard } from '@nestjs/passport';
 import { UpdateTeamDto } from './dto/update-team.dto';
 import { TeamInfoDto } from './dto/team-info.dto';
+import { FindTeamDto } from './dto/find-team.dto';
+import { TeamListDto } from './dto/team-list.dto';
 
 @ApiTags('Team')
 @Controller('team')
 export class TeamController {
   constructor(private readonly teamService: TeamService) {}
+
+  @Get()
+  @UseGuards(AuthGuard('jwt'))
+  @ApiOperation({
+    summary: '팀 리스트',
+    description: '팀 리스트를 조회합니다.',
+  })
+  @ApiOkResponse({
+    description: '팀 리스트를 출력합니다.',
+    type: TeamListDto,
+  })
+  @ApiCookieAuth()
+  async find(@Query() option: FindTeamDto) {
+    const team = await this.teamService.find(option);
+    return {
+      team: team.map((e) => {
+        return {
+          ...e,
+          applicant: { ...e.applicant, id: undefined },
+          permission: [...e.permission.user],
+        };
+      }),
+    };
+  }
 
   @Get(':id')
   @UseGuards(AuthGuard('jwt'))

@@ -1,6 +1,6 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { DeepPartial, Repository } from 'typeorm';
+import { DeepPartial, MoreThanOrEqual, Repository } from 'typeorm';
 import { Team } from './entites/team.entity';
 import { CreateTeamDto } from './dto/create-team.dto';
 import { FindTeamDto } from './dto/find-team.dto';
@@ -20,10 +20,18 @@ export class TeamService {
   ) {}
 
   async find(option: FindTeamDto): Promise<Team[]> {
-    const { id, name, page = 1, count = 5, sort = 'ASC' } = option;
+    const { id, name, page = 1, count = 5, sort = 'ASC', applicant } = option;
     return await this.teamRepository.find({
       order: { created: sort },
-      where: { id, name },
+      where: {
+        id,
+        name,
+        applicant: {
+          developer: applicant == 'developer' && MoreThanOrEqual(1),
+          designer: applicant == 'designer' && MoreThanOrEqual(1),
+          director: applicant == 'director' && MoreThanOrEqual(1),
+        },
+      },
       skip: (page - 1) * count,
       take: count,
       relations: [
