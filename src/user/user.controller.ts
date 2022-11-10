@@ -10,6 +10,7 @@ import {
   HttpException,
   HttpStatus,
   Res,
+  Query,
 } from '@nestjs/common';
 import { UserService } from './user.service';
 import { UpdateUserDto } from './dto/update-user.dto';
@@ -24,11 +25,24 @@ import {
 } from '@nestjs/swagger';
 import { AuthGuard } from '@nestjs/passport';
 import { UserInfoDto } from '../auth/dto/user-info.dto';
+import { AvailavleUserDto } from './dto/available-user.dto';
 
 @ApiTags('User')
 @Controller('user')
 export class UserController {
   constructor(private readonly userService: UserService) {}
+
+  @Get('available')
+  @ApiOperation({
+    summary: '유저 정보 중복 확인',
+    description: '유저 정보가 중복되는지 확인힙나다.',
+  })
+  @ApiOkResponse({ description: '유저 정보가 겹치지 않는 경우 발생합니다.' })
+  @ApiBadRequestResponse({ description: '유저 정보가 겹치는 경우 발생합니다.' })
+  async available(@Query() data: AvailavleUserDto, @Res() res) {
+    const result = await this.userService.available(data);
+    res.sendStatus(result ? HttpStatus.BAD_REQUEST : HttpStatus.OK);
+  }
 
   @Get(':id')
   @ApiOperation({
