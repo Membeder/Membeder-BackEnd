@@ -6,7 +6,7 @@ export class FindTeamDto {
   @ApiProperty({ description: '정렬', required: false })
   @IsOptional()
   @IsIn(['ASC', 'DESC'])
-  sort?: 'ASC' | 'DESC';
+  sort?: 'ASC' | 'DESC' = 'ASC';
 
   @ApiProperty({ description: 'ID', required: false })
   @IsOptional()
@@ -27,11 +27,11 @@ export class FindTeamDto {
   @IsOptional()
   @Type(() => Number)
   @IsInt()
-  page?: number;
+  page?: number = 1;
 
   @ApiProperty({ description: '개수', required: false })
   @IsOptional()
   @Type(() => Number)
   @IsInt()
-  count?: number;
+  count?: number = 10;
 }
