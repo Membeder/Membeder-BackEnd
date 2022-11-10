@@ -49,12 +49,16 @@ export class AuthController {
     return {
       user: {
         ...req.user,
-        team: {
-          ...req.user.team,
-          schedule: req.user.team.schedule.sort((o1, o2) => {
-            return +o1.deadline > +o2.deadline ? 1 : -1;
-          }),
-        },
+        team: req.user.team.map((e) => {
+          return {
+            ...e,
+            schedule:
+              e.schedule &&
+              e.schedule.sort((o1, o2) => {
+                return +o1.deadline > +o2.deadline ? 1 : -1;
+              }),
+          };
+        }),
       },
     };
   }
@@ -77,7 +81,19 @@ export class AuthController {
     const token = await this.authService.generateToken(result);
     res.cookie('Authentication', token.accessToken);
     res.send({
-      user: result,
+      user: {
+        ...req.user,
+        team: req.user.team.map((e) => {
+          return {
+            ...e,
+            schedule:
+              e.schedule &&
+              e.schedule.sort((o1, o2) => {
+                return +o1.deadline > +o2.deadline ? 1 : -1;
+              }),
+          };
+        }),
+      },
       ...token,
     });
   }
@@ -102,12 +118,16 @@ export class AuthController {
     res.send({
       user: {
         ...req.user,
-        team: {
-          ...req.user.team,
-          schedule: req.user.team.schedule.sort((o1, o2) => {
-            return +o1.deadline > +o2.deadline ? 1 : -1;
-          }),
-        },
+        team: req.user.team.map((e) => {
+          return {
+            ...e,
+            schedule:
+              e.schedule &&
+              e.schedule.sort((o1, o2) => {
+                return +o1.deadline > +o2.deadline ? 1 : -1;
+              }),
+          };
+        }),
       },
       ...token,
     });
