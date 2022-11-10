@@ -4,6 +4,7 @@ import { DeepPartial, DeleteResult, Repository, UpdateResult } from 'typeorm';
 import { User } from './entities/user.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { FindUserDto } from './dto/find-user.dto';
+import { AvailavleUserDto } from './dto/available-user.dto';
 
 @Injectable()
 export class UserService {
@@ -15,6 +16,13 @@ export class UserService {
   async create(data: CreateUserDto): Promise<User> {
     const newUser = this.userRepository.create(data);
     return await this.userRepository.save(newUser);
+  }
+
+  async available({ email, nickname }: AvailavleUserDto): Promise<boolean> {
+    const user = await this.userRepository.findOne({
+      where: { email, nickname },
+    });
+    return !!user;
   }
 
   async find(option: FindUserDto): Promise<User[]> {
