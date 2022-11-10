@@ -10,20 +10,19 @@ import { TeamApplicantService } from './team-applicant.service';
 import { TeamPermission } from './entites/team-permission.entity';
 import { TeamPermissionService } from './team-permission.service';
 import { TeamPermissionController } from './team-permission.controller';
-import { JwtStrategy } from 'src/auth/strategy/jwt.strategy';
+import { TeamJoinRequestController } from './team-join-request.controller';
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([User, Team, TeamApplicant, TeamPermission]),
     UserModule,
   ],
-  controllers: [TeamController, TeamPermissionController],
-  providers: [
-    TeamService,
-    TeamApplicantService,
-    TeamPermissionService,
-    JwtStrategy,
+  controllers: [
+    TeamController,
+    TeamPermissionController,
+    TeamJoinRequestController,
   ],
+  providers: [TeamService, TeamApplicantService, TeamPermissionService],
   exports: [TeamService, TeamApplicantService, TeamPermissionService],
 })
 export class TeamModule {}
