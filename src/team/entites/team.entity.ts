@@ -52,7 +52,7 @@ export class Team {
   @JoinColumn({ name: 'team_permission' })
   permission: TeamPermission;
 
-  @ApiProperty({ description: '팀 일정', type: () => [Schedule] })
+  @ApiProperty({ description: '팀 일정', type: () => [Schedule], example: [] })
   @ManyToMany(() => Schedule)
   @JoinTable({ name: 'team_schedule' })
   schedule: Schedule[];
@@ -61,6 +61,11 @@ export class Team {
   @ManyToOne(() => TeamApplicant)
   @JoinColumn({ name: 'applicant_id' })
   applicant: TeamApplicant;
+
+  @ApiProperty({ description: '팀 가입 요청', type: () => [User], example: [] })
+  @ManyToMany(() => User)
+  @JoinTable({ name: 'team_join_request' })
+  join_request: User[];
 
   @CreateDateColumn()
   created: Date;

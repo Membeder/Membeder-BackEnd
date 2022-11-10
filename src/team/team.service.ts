@@ -41,6 +41,7 @@ export class TeamService {
         'permission',
         'permission.user',
         'schedule',
+        'join_request',
       ],
     });
   }
@@ -55,6 +56,7 @@ export class TeamService {
         'permission',
         'permission.user',
         'schedule',
+        'join_request',
       ],
     });
     if (team) return team;
@@ -145,8 +147,13 @@ export class TeamService {
         'The user is already exist in this team.',
         HttpStatus.BAD_REQUEST,
       );
-    // if (team.owner.id != now_user_id)
-    //   throw new HttpException('You are not team owner.', HttpStatus.FORBIDDEN);
+    if (team.owner.id != now_user_id)
+      throw new HttpException('You are not team owner.', HttpStatus.FORBIDDEN);
+    if (team.join_request.find((e) => e.id == user_id))
+      team.join_request.splice(
+        team.join_request.findIndex((e) => e.id == user.id),
+        1,
+      );
     team.member.push(user);
     await this.teamRepository.save(team);
     user.team.push(await this.findById(team.id));
@@ -172,8 +179,8 @@ export class TeamService {
         'The user is not exist in this team.',
         HttpStatus.BAD_REQUEST,
       );
-    // if (team.owner.id != now_user_id)
-    //   throw new HttpException('You are not team owner.', HttpStatus.FORBIDDEN);
+    if (team.owner.id != now_user_id)
+      throw new HttpException('You are not team owner.', HttpStatus.FORBIDDEN);
     team.member.splice(
       team.member.findIndex((e) => e.id == user.id),
       1,
@@ -186,4 +193,62 @@ export class TeamService {
     await this.userRepository.save(user);
     return this.findById(team.id);
   }
+
+  async addJoinRequest(team_id: string, user_id: string): Promise<Team> {
+    const team = await this.findById(team_id);
+    if (!team)
+      throw new HttpException(
+        'The team does not exist.',
+        HttpStatus.BAD_REQUEST,
+      );
+    const user = await this.userRepository.findOne({
+      where: { id: user_id },
+      relations: ['team'],
+    });
+    if (!user)
+      throw new HttpException('The user is not exist.', HttpStatus.BAD_REQUEST);
+    if (team.member.find((e) => e.id == user_id))
+      throw new HttpException(
+        'The user is already exist in this team.',
+        HttpStatus.BAD_REQUEST,
+      );
+    if (team.join_request.find((e) => e.id == user_id))
+      throw new HttpException(
+        'The user is already exist in this team request.',
+        HttpStatus.BAD_REQUEST,
+      );
+    team.join_request.push(user);
+    await this.teamRepository.save(team);
+    return this.findById(team.id);
+  }
+
+  async removeJoinRequest(team_id: string, user_id: string): Promise<Team> {
+    const team = await this.findById(team_id);
+    if (!team)
+      throw new HttpException(
+        'The team does not exist.',
+        HttpStatus.BAD_REQUEST,
+      );
+    const user = await this.userRepository.findOne({
+      where: { id: user_id },
+      relations: ['team'],
+    });
+    if (!user)
+      throw new HttpException('The user is not exist.', HttpStatus.BAD_REQUEST);
+    if (!team.join_request.find((e) => e.id == user_id))
+      throw new HttpException(
+        'The user is not exist in this team request.',
+        HttpStatus.BAD_REQUEST,
+      );
+    team.join_request.splice(
+      team.join_request.findIndex((e) => e.id == user.id),
+      1,
+    );
+    await this.teamRepository.save(team);
+    return this.findById(team.id);
+  }
+
+  // async addJoinRequest(team_id: string, user_id: string): Promise<Team> {}
+
+  // async removeJoinRequest(team_id: string, user_id: string): Promise<Team> {}
 }

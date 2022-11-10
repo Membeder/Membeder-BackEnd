@@ -40,6 +40,14 @@ export class GetTeamDto extends CreateTeamDto {
   })
   schedule: Schedule[];
 
+  @ApiProperty({
+    description: '팀 참가 요청',
+    type: () => [GetUserDto],
+    example: [],
+    required: false,
+  })
+  join_request: GetUserDto[];
+
   @ApiProperty({ description: '팀 생성일' })
   created: Date;
 
