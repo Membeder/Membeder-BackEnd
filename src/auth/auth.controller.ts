@@ -82,17 +82,19 @@ export class AuthController {
     res.cookie('Authentication', token.accessToken);
     res.send({
       user: {
-        ...req.user,
-        team: req.user.team.map((e) => {
-          return {
-            ...e,
-            schedule:
-              e.schedule &&
-              e.schedule.sort((o1, o2) => {
-                return +o1.deadline > +o2.deadline ? 1 : -1;
-              }),
-          };
-        }),
+        ...result,
+        team:
+          result.team &&
+          result.team.map((e) => {
+            return {
+              ...e,
+              schedule:
+                e.schedule &&
+                e.schedule.sort((o1, o2) => {
+                  return +o1.deadline > +o2.deadline ? 1 : -1;
+                }),
+            };
+          }),
       },
       ...token,
     });
