@@ -15,6 +15,7 @@ import {
   ApiParam,
   ApiCookieAuth,
   ApiTags,
+  ApiCreatedResponse,
 } from '@nestjs/swagger';
 import { TeamInfoDto } from './dto/team-info.dto';
 import { TeamService } from './team.service';
@@ -30,7 +31,7 @@ export class TeamJoinRequestController {
     summary: '팀 가입 요청 추가',
     description: '팀 가입 요청을 추가합니다.',
   })
-  @ApiOkResponse({
+  @ApiCreatedResponse({
     description: '성공적으로 팀 가입 요청이 추가됩니다.',
     type: TeamInfoDto,
   })
