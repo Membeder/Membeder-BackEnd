@@ -10,6 +10,7 @@ import { TeamApplicantService } from './team-applicant.service';
 import { TeamPermission } from './entites/team-permission.entity';
 import { TeamPermissionService } from './team-permission.service';
 import { TeamPermissionController } from './team-permission.controller';
+import { JwtStrategy } from 'src/auth/strategy/jwt.strategy';
 
 @Module({
   imports: [
@@ -17,7 +18,12 @@ import { TeamPermissionController } from './team-permission.controller';
     UserModule,
   ],
   controllers: [TeamController, TeamPermissionController],
-  providers: [TeamService, TeamApplicantService, TeamPermissionService],
+  providers: [
+    TeamService,
+    TeamApplicantService,
+    TeamPermissionService,
+    JwtStrategy,
+  ],
   exports: [TeamService, TeamApplicantService, TeamPermissionService],
 })
 export class TeamModule {}
