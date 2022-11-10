@@ -18,9 +18,9 @@ import { TeamJoinRequestController } from './team-join-request.controller';
     UserModule,
   ],
   controllers: [
-    TeamController,
-    TeamPermissionController,
     TeamJoinRequestController,
+    TeamPermissionController,
+    TeamController,
   ],
   providers: [TeamService, TeamApplicantService, TeamPermissionService],
   exports: [TeamService, TeamApplicantService, TeamPermissionService],
