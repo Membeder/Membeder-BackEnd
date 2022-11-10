@@ -145,8 +145,8 @@ export class TeamService {
         'The user is already exist in this team.',
         HttpStatus.BAD_REQUEST,
       );
-    if (team.owner.id != now_user_id)
-      throw new HttpException('You are not team owner.', HttpStatus.FORBIDDEN);
+    // if (team.owner.id != now_user_id)
+    //   throw new HttpException('You are not team owner.', HttpStatus.FORBIDDEN);
     team.member.push(user);
     await this.teamRepository.save(team);
     user.team.push(await this.findById(team.id));
@@ -172,8 +172,8 @@ export class TeamService {
         'The user is not exist in this team.',
         HttpStatus.BAD_REQUEST,
       );
-    if (team.owner.id != now_user_id)
-      throw new HttpException('You are not team owner.', HttpStatus.FORBIDDEN);
+    // if (team.owner.id != now_user_id)
+    //   throw new HttpException('You are not team owner.', HttpStatus.FORBIDDEN);
     team.member.splice(
       team.member.findIndex((e) => e.id == user.id),
       1,
