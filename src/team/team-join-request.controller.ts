@@ -24,7 +24,7 @@ import { TeamService } from './team.service';
 export class TeamJoinRequestController {
   constructor(private readonly teamService: TeamService) {}
 
-  @Post('/join/:team_id')
+  @Post(':team_id')
   @UseGuards(AuthGuard('jwt'))
   @ApiOperation({
     summary: '팀 가입 요청 추가',
@@ -59,7 +59,7 @@ export class TeamJoinRequestController {
     };
   }
 
-  @Delete('/join/:team_id')
+  @Delete(':team_id')
   @UseGuards(AuthGuard('jwt'))
   @ApiOperation({
     summary: '팀 가입 요청 제거',
