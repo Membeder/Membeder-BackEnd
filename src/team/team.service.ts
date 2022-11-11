@@ -20,7 +20,7 @@ export class TeamService {
   ) {}
 
   async find(option: FindTeamDto): Promise<Team[]> {
-    const { id, name, page, count, sort, applicant } = option;
+    const { id, name, page = 1, count = 10, sort, applicant } = option;
     return await this.teamRepository.find({
       order: { created: sort },
       where: {
