@@ -99,11 +99,11 @@ export class TeamJoinRequestController {
   @Delete('/:team_id/:user_id')
   @UseGuards(AuthGuard('jwt'))
   @ApiOperation({
-    summary: '팀 가입 요청 제거',
-    description: '팀 가입 요청을 제거합니다.',
+    summary: '팀 가입 요청 거절',
+    description: '팀 가입 요청을 거절합니다.',
   })
   @ApiOkResponse({
-    description: '성공적으로 팀 가입 요청이 제거됩니다.',
+    description: '성공적으로 팀 가입 요청이 거절됩니다.',
     type: TeamInfoDto,
   })
   @ApiBadRequestResponse({
