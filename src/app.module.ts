@@ -7,6 +7,7 @@ import { GoogleModule } from './google/google.module';
 import { TeamModule } from './team/team.module';
 import { ScheduleModule } from './schedule/schedule.module';
 import { FileModule } from './file/file.module';
+import { ContestModule } from './contest/contest.module';
 
 @Module({
   imports: [
@@ -21,6 +22,7 @@ import { FileModule } from './file/file.module';
     GoogleModule,
     ScheduleModule,
     FileModule,
+    ContestModule,
   ],
 })
 export class AppModule {}
