@@ -6,9 +6,9 @@ import { DatabaseModule } from './database.module';
 import { GoogleModule } from './google/google.module';
 import { TeamModule } from './team/team.module';
 import { ScheduleModule } from './schedule/schedule.module';
-import { FileModule } from './file/file.module';
 import { ContestModule } from './contest/contest.module';
 import { PortfolioModule } from './portfolio/portfolio.module';
+import { ChatModule } from './chat/chat.module';
 
 @Module({
   imports: [
@@ -22,9 +22,9 @@ import { PortfolioModule } from './portfolio/portfolio.module';
     TeamModule,
     GoogleModule,
     ScheduleModule,
-    // FileModule,
     ContestModule,
     PortfolioModule,
+    // ChatModule,
   ],
 })
 export class AppModule {}
