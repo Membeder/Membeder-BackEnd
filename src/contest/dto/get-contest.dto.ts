@@ -40,4 +40,9 @@ export class GetContestDto {
     description: '자세한 정보',
   })
   content: string;
+
+  @ApiProperty({
+    description: '대회 포스터',
+  })
+  poster: string;
 }

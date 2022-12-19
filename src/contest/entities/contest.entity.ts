@@ -30,4 +30,8 @@ export class Contest {
   @ApiProperty({ description: '자세한 정보' })
   @Column({ nullable: false })
   content: string;
+
+  @ApiProperty({ description: '대회 포스터' })
+  @Column({ nullable: false })
+  poster: string;
 }
