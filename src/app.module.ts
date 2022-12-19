@@ -8,6 +8,7 @@ import { TeamModule } from './team/team.module';
 import { ScheduleModule } from './schedule/schedule.module';
 import { FileModule } from './file/file.module';
 import { ContestModule } from './contest/contest.module';
+import { PortfolioModule } from './portfolio/portfolio.module';
 
 @Module({
   imports: [
@@ -21,8 +22,9 @@ import { ContestModule } from './contest/contest.module';
     TeamModule,
     GoogleModule,
     ScheduleModule,
-    FileModule,
+    // FileModule,
     ContestModule,
+    PortfolioModule,
   ],
 })
 export class AppModule {}
