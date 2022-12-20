@@ -7,6 +7,7 @@ import { FindTeamDto } from './dto/find-team.dto';
 import { User } from '../user/entities/user.entity';
 import { TeamApplicantService } from './team-applicant.service';
 import { TeamPermissionService } from './team-permission.service';
+import { ChatRoom } from '../chat/entities/chat-room.entity';
 
 @Injectable()
 export class TeamService {
@@ -15,6 +16,8 @@ export class TeamService {
     private readonly teamRepository: Repository<Team>,
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
+    @InjectRepository(ChatRoom)
+    private readonly chatRoomRepository: Repository<ChatRoom>,
     private readonly teamApplicantService: TeamApplicantService,
     private readonly teamPermissionService: TeamPermissionService,
   ) {}

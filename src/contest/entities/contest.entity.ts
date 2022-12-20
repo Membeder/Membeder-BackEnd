@@ -34,4 +34,8 @@ export class Contest {
   @ApiProperty({ description: '대회 포스터' })
   @Column({ nullable: false })
   poster: string;
+
+  @ApiProperty({ description: '대회 시상내역' })
+  @Column({ nullable: false })
+  award: string;
 }

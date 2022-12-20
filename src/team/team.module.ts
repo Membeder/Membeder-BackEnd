@@ -14,6 +14,7 @@ import { TeamApplicantController } from './team-applicant.controller';
 import { TeamNoticeService } from './team-notice.service';
 import { TeamNoticeController } from './team-notice.controller';
 import { TeamNotice } from './entites/team-notice.entity';
+import { ChatRoom } from '../chat/entities/chat-room.entity';
 
 @Module({
   imports: [
@@ -23,6 +24,7 @@ import { TeamNotice } from './entites/team-notice.entity';
       TeamApplicant,
       TeamPermission,
       TeamNotice,
+      ChatRoom,
     ]),
     UserModule,
   ],
