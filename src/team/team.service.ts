@@ -46,6 +46,7 @@ export class TeamService {
         'schedule',
         'join_request',
         'notice',
+        'chat',
       ],
     });
   }
@@ -62,6 +63,7 @@ export class TeamService {
         'schedule',
         'join_request',
         'notice',
+        'chat',
       ],
     });
     if (team) return team;
@@ -84,6 +86,15 @@ export class TeamService {
       relations: ['team'],
     });
     const applicant = await this.teamApplicantService.create(data.applicant);
+    let chat = await this.chatRoomRepository.create({ name: data.name });
+    await this.chatRoomRepository.save(chat);
+    chat = await this.chatRoomRepository.findOne({
+      where: { id: chat.id },
+      relations: ['owner', 'member'],
+    });
+    chat.owner = owner;
+    chat.member.push(owner);
+    await this.chatRoomRepository.save(chat);
     const newTeam = this.teamRepository.create({
       ...data,
       owner,
@@ -91,6 +102,7 @@ export class TeamService {
       permission: await this.teamPermissionService.create(),
       applicant,
       schedule: [],
+      chat,
     });
     await this.teamRepository.save(newTeam);
     owner.team.push(await this.findById(newTeam.id));
@@ -113,6 +125,7 @@ export class TeamService {
   async remove(id: string, user: User): Promise<Team> {
     const team = await this.findById(id);
     const applicant_id = team.applicant.id;
+    const room_id = team.chat.id;
     if (!team)
       throw new HttpException(
         'The team does not exist.',
@@ -127,6 +140,7 @@ export class TeamService {
       throw new HttpException('You are not team owner.', HttpStatus.FORBIDDEN);
     await this.teamRepository.delete({ id });
     await this.teamApplicantService.remove(applicant_id);
+    await this.chatRoomRepository.delete({ id: room_id });
     return team;
   }
 
@@ -143,7 +157,7 @@ export class TeamService {
       );
     const user = await this.userRepository.findOne({
       where: { id: user_id },
-      relations: ['team'],
+      relations: ['team', 'chat'],
     });
     if (!user)
       throw new HttpException('The user is not exist.', HttpStatus.BAD_REQUEST);
@@ -159,10 +173,16 @@ export class TeamService {
         team.join_request.findIndex((e) => e.id == user.id),
         1,
       );
+    const room = await this.chatRoomRepository.findOne({
+      where: { id: team.chat.id },
+      relations: ['member'],
+    });
     team.member.push(user);
     await this.teamRepository.save(team);
     user.team.push(await this.findById(team.id));
     await this.userRepository.save(user);
+    room.member.push(user);
+    await this.chatRoomRepository.save(room);
     return this.findById(team.id);
   }
 
@@ -175,7 +195,7 @@ export class TeamService {
       );
     const user = await this.userRepository.findOne({
       where: { id: user_id },
-      relations: ['team'],
+      relations: ['team', 'chat'],
     });
     if (!user)
       throw new HttpException('The user is not exist.', HttpStatus.BAD_REQUEST);
@@ -186,6 +206,10 @@ export class TeamService {
       );
     if (team.owner.id != now_user_id)
       throw new HttpException('You are not team owner.', HttpStatus.FORBIDDEN);
+    const room = await this.chatRoomRepository.findOne({
+      where: { id: team.chat.id },
+      relations: ['member'],
+    });
     team.member.splice(
       team.member.findIndex((e) => e.id == user.id),
       1,
@@ -196,6 +220,11 @@ export class TeamService {
       1,
     );
     await this.userRepository.save(user);
+    room.member.splice(
+      room.member.findIndex((e) => e.id == team.id),
+      1,
+    );
+    await this.chatRoomRepository.save(room);
     return this.findById(team.id);
   }
 

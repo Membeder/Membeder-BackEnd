@@ -15,6 +15,7 @@ import { TeamApplicant } from './team-applicant.entity';
 import { TeamPermission } from './team-permission.entity';
 import { Schedule } from '../../schedule/entities/schedule.entity';
 import { TeamNotice } from './team-notice.entity';
+import { ChatRoom } from '../../chat/entities/chat-room.entity';
 
 @Entity('team')
 export class Team {
@@ -80,6 +81,15 @@ export class Team {
   @ManyToMany(() => TeamNotice)
   @JoinTable({ name: 'team_notice_list' })
   notice: TeamNotice[];
+
+  @ApiProperty({
+    description: '팀 채팅방',
+    type: () => ChatRoom,
+    example: [],
+  })
+  @ManyToOne(() => ChatRoom)
+  @JoinTable({ name: 'team_notice_list' })
+  chat: ChatRoom;
 
   @CreateDateColumn()
   created: Date;
