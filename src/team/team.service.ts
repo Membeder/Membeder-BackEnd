@@ -83,18 +83,18 @@ export class TeamService {
       );
     const owner = await this.userRepository.findOne({
       where: { id },
-      relations: ['team'],
+      relations: ['team', 'chat'],
     });
     const applicant = await this.teamApplicantService.create(data.applicant);
-    let chat = await this.chatRoomRepository.create({ name: data.name });
-    await this.chatRoomRepository.save(chat);
-    chat = await this.chatRoomRepository.findOne({
-      where: { id: chat.id },
+    let room = await this.chatRoomRepository.create({ name: data.name });
+    await this.chatRoomRepository.save(room);
+    room = await this.chatRoomRepository.findOne({
+      where: { id: room.id },
       relations: ['owner', 'member'],
     });
-    chat.owner = owner;
-    chat.member.push(owner);
-    await this.chatRoomRepository.save(chat);
+    room.owner = owner;
+    room.member.push(owner);
+    await this.chatRoomRepository.save(room);
     const newTeam = this.teamRepository.create({
       ...data,
       owner,
@@ -102,10 +102,11 @@ export class TeamService {
       permission: await this.teamPermissionService.create(),
       applicant,
       schedule: [],
-      chat,
+      chat: room,
     });
     await this.teamRepository.save(newTeam);
     owner.team.push(await this.findById(newTeam.id));
+    owner.chat.push(room);
     await this.userRepository.save(owner);
     return this.findById(newTeam.id);
   }
@@ -180,6 +181,7 @@ export class TeamService {
     team.member.push(user);
     await this.teamRepository.save(team);
     user.team.push(await this.findById(team.id));
+    user.chat.push(room);
     await this.userRepository.save(user);
     room.member.push(user);
     await this.chatRoomRepository.save(room);
@@ -217,6 +219,10 @@ export class TeamService {
     await this.teamRepository.save(team);
     user.team.splice(
       user.team.findIndex((e) => e.id == team.id),
+      1,
+    );
+    user.chat.splice(
+      user.chat.findIndex((e) => e.id == room.id),
       1,
     );
     await this.userRepository.save(user);
