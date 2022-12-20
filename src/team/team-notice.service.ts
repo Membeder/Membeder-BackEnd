@@ -15,6 +15,24 @@ export class TeamNoticeService {
     private readonly teamNoticeRepository: Repository<TeamNotice>,
   ) {}
 
+  async get(team_id: string, notice_id: string) {
+    const team = await this.teamRepository.findOne({
+      where: { id: team_id },
+      relations: ['owner', 'notice'],
+    });
+    if (!team)
+      throw new HttpException('The room is not exist.', HttpStatus.BAD_REQUEST);
+    const notice = await this.teamNoticeRepository.findOne({
+      where: { id: notice_id },
+    });
+    if (!notice)
+      throw new HttpException(
+        'The notice is not exist.',
+        HttpStatus.BAD_REQUEST,
+      );
+    return notice;
+  }
+
   async create(team_id: string, user_id: string, data: CreateTeamNoticeDto) {
     const team = await this.teamRepository.findOne({
       where: { id: team_id },
