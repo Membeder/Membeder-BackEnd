@@ -9,6 +9,7 @@ import {
   Body,
   Controller,
   Delete,
+  Get,
   HttpStatus,
   Param,
   Patch,
@@ -27,6 +28,34 @@ import { UpdateTeamNoticeDto } from './dto/update-team-notice.dto';
 @Controller('team/notice')
 export class TeamNoticeController {
   constructor(private readonly teamNoticeService: TeamNoticeService) {}
+
+  @Get('/:team_id/:notice_id')
+  @UseGuards(AuthGuard('jwt'))
+  @ApiParam({
+    name: 'team_id',
+    required: true,
+    description: '팀 UUID',
+  })
+  @ApiParam({
+    name: 'notice_id',
+    required: true,
+    description: '팀 공지 UUID',
+  })
+  @ApiOperation({
+    summary: '팀 공지 가져오기',
+    description: '팀 공지를 가져옵니다.',
+  })
+  @ApiOkResponse({
+    description: '팀 공지를 가져옵니다.',
+    type: GetTeamNoticeDto,
+  })
+  @ApiCookieAuth()
+  async get(
+    @Param('team_id') team_id: string,
+    @Param('notice_id') notice_id: string,
+  ) {
+    return await this.teamNoticeService.get(team_id, notice_id);
+  }
 
   @Post('/:team_id')
   @UseGuards(AuthGuard('jwt'))
