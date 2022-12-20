@@ -14,6 +14,7 @@ import { User } from '../../user/entities/user.entity';
 import { TeamApplicant } from './team-applicant.entity';
 import { TeamPermission } from './team-permission.entity';
 import { Schedule } from '../../schedule/entities/schedule.entity';
+import { TeamNotice } from './team-notice.entity';
 
 @Entity('team')
 export class Team {
@@ -70,6 +71,15 @@ export class Team {
   @ManyToMany(() => User)
   @JoinTable({ name: 'team_join_request' })
   join_request: User[];
+
+  @ApiProperty({
+    description: '팀 공지',
+    type: () => [TeamNotice],
+    example: [],
+  })
+  @ManyToMany(() => TeamNotice)
+  @JoinTable({ name: 'team_notice_list' })
+  notice: TeamNotice[];
 
   @CreateDateColumn()
   created: Date;

@@ -42,6 +42,7 @@ export class TeamService {
         'permission.user',
         'schedule',
         'join_request',
+        'notice',
       ],
     });
   }
@@ -57,6 +58,7 @@ export class TeamService {
         'permission.user',
         'schedule',
         'join_request',
+        'notice',
       ],
     });
     if (team) return team;

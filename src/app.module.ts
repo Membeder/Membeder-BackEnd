@@ -9,6 +9,7 @@ import { ScheduleModule } from './schedule/schedule.module';
 import { ContestModule } from './contest/contest.module';
 import { PortfolioModule } from './portfolio/portfolio.module';
 import { ChatModule } from './chat/chat.module';
+import { FileModule } from './file/file.module';
 
 @Module({
   imports: [
@@ -25,6 +26,7 @@ import { ChatModule } from './chat/chat.module';
     ContestModule,
     PortfolioModule,
     ChatModule,
+    FileModule,
   ],
 })
 export class AppModule {}
