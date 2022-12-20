@@ -37,6 +37,10 @@ export class Team {
   @Column({ nullable: true })
   image: string;
 
+  @ApiProperty({ description: '팀 배너', required: false })
+  @Column({ nullable: true })
+  banner: string;
+
   @ApiProperty({ description: '팀장', type: () => User })
   @ManyToOne(() => User)
   @JoinColumn({ name: 'owner_id' })

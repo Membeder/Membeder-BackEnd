@@ -23,7 +23,7 @@ import { TeamService } from './team.service';
 
 @ApiTags('Team Join Request')
 @Controller('team/join')
-export class TeamJoinRequestController {
+export class TeamApplicantController {
   constructor(private readonly teamService: TeamService) {}
 
   @Post(':team_id')

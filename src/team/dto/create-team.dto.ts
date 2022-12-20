@@ -34,6 +34,11 @@ export class CreateTeamDto {
   @IsString()
   image: string;
 
+  @ApiProperty({ description: '팀 배너', example: 'URL', required: false })
+  @IsOptional()
+  @IsString()
+  banner: string;
+
   @ApiProperty({ description: '모집 인원', required: false })
   @IsOptional()
   @IsObject()

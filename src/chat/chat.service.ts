@@ -18,6 +18,23 @@ export class ChatService {
     private readonly chatRoomRepository: Repository<ChatRoom>,
   ) {}
 
+  async get(room_id: string, user_id: string) {
+    const room = await this.chatRoomRepository.findOne({
+      where: { id: room_id },
+    });
+    if (!room)
+      throw new HttpException('The room is not exist.', HttpStatus.BAD_REQUEST);
+    if (!room.member.find((e) => e.id == user_id))
+      throw new HttpException(
+        'The user is not in this room.',
+        HttpStatus.BAD_REQUEST,
+      );
+    return await this.chatRoomRepository.findOne({
+      where: { id: room_id },
+      relations: ['owner', 'member', 'chat'],
+    });
+  }
+
   async create(room_id: string, user_id: string, data: CreateChatDto) {
     const room = await this.chatRoomRepository.findOne({
       where: { id: room_id },
@@ -26,7 +43,7 @@ export class ChatService {
       throw new HttpException('The room is not exist.', HttpStatus.BAD_REQUEST);
     if (!room.member.find((e) => e.id == user_id))
       throw new HttpException(
-        'The User does not exist in this room.',
+        'The user does not exist in this room.',
         HttpStatus.BAD_REQUEST,
       );
     const chat = await this.chatRepository.create(data);
@@ -34,11 +51,100 @@ export class ChatService {
   }
 
   async createRoom(user_id: string, data: CreateChatRoomDto) {
-    const room = await this.chatRoomRepository.create(data);
-    return await this.chatRoomRepository.save(room);
+    const owner = await this.userRepository.findOne({ where: { id: user_id } });
+    const room = await this.chatRoomRepository.create({ ...data, owner });
+    await this.chatRoomRepository.save(room);
+    owner.chat.push(room);
+    await this.userRepository.save(owner);
+    return room;
   }
 
-  async addUser(room_id: string, user_id: string) {}
+  async removeRoom(room_id: string, user_id: string) {
+    const user = await this.userRepository.findOne({ where: { id: user_id } });
+    if (!user)
+      throw new HttpException('The User is not exist.', HttpStatus.BAD_REQUEST);
+    const room = await this.chatRoomRepository.findOne({
+      where: { id: room_id },
+      relations: ['owner', 'member', 'chat'],
+    });
+    if (!room)
+      throw new HttpException('The room is not exist.', HttpStatus.BAD_REQUEST);
+    if (room.owner.id != user_id)
+      throw new HttpException(
+        'The user is not owner in this room.',
+        HttpStatus.FORBIDDEN,
+      );
+    await this.chatRoomRepository.delete({ id: room_id });
+  }
 
-  async removeUser(room_id: string, user_id: string) {}
+  async addUser(room_id: string, user_id: string, add_user_id: string) {
+    const room = await this.chatRoomRepository.findOne({
+      where: { id: room_id },
+      relations: ['owner', 'member', 'chat'],
+    });
+    if (!room)
+      throw new HttpException('The room is not exist.', HttpStatus.BAD_REQUEST);
+    if (room.owner.id != user_id)
+      throw new HttpException(
+        'The user is not owner in this room.',
+        HttpStatus.FORBIDDEN,
+      );
+    if (!room)
+      throw new HttpException('The room is not exist.', HttpStatus.BAD_REQUEST);
+    if (room.owner.id != user_id)
+      throw new HttpException(
+        'The user is not owner in this room.',
+        HttpStatus.FORBIDDEN,
+      );
+    const user = await this.userRepository.findOne({
+      where: { id: add_user_id },
+    });
+    if (!user)
+      throw new HttpException('The user is not exist.', HttpStatus.BAD_REQUEST);
+    if (room.member.find((e) => e.id == add_user_id))
+      throw new HttpException(
+        'The user is already in this room.',
+        HttpStatus.BAD_REQUEST,
+      );
+    room.member.push(user);
+    await this.chatRoomRepository.save(room);
+    user.chat.push(room);
+    await this.userRepository.save(user);
+    return room;
+  }
+
+  async removeUser(room_id: string, user_id: string, remove_user_id: string) {
+    const room = await this.chatRoomRepository.findOne({
+      where: { id: room_id },
+      relations: ['owner', 'member', 'chat'],
+    });
+    if (!room)
+      throw new HttpException('The room is not exist.', HttpStatus.BAD_REQUEST);
+    if (room.owner.id != user_id && user_id != remove_user_id)
+      throw new HttpException(
+        'The user is not owner in this room.',
+        HttpStatus.FORBIDDEN,
+      );
+    const user = await this.userRepository.findOne({
+      where: { id: remove_user_id },
+    });
+    if (!user)
+      throw new HttpException('The user is not exist.', HttpStatus.BAD_REQUEST);
+    if (!room.member.find((e) => e.id == remove_user_id))
+      throw new HttpException(
+        'The user is already not in this room.',
+        HttpStatus.BAD_REQUEST,
+      );
+    user.chat.splice(
+      user.chat.findIndex((e) => e.id == room_id),
+      1,
+    );
+    await this.userRepository.save(user);
+    room.member.splice(
+      room.member.findIndex((e) => e.id == remove_user_id),
+      1,
+    );
+    await this.chatRoomRepository.save(room);
+    return room;
+  }
 }

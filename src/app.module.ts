@@ -24,7 +24,7 @@ import { ChatModule } from './chat/chat.module';
     ScheduleModule,
     ContestModule,
     PortfolioModule,
-    // ChatModule,
+    ChatModule,
   ],
 })
 export class AppModule {}

@@ -2,8 +2,10 @@ import {
   Column,
   CreateDateColumn,
   Entity,
+  JoinColumn,
   JoinTable,
   ManyToMany,
+  ManyToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
@@ -20,6 +22,11 @@ export class ChatRoom {
   @ApiProperty({ description: '채팅방 이름' })
   @Column({ nullable: false })
   name: string;
+
+  @ApiProperty({ description: '채팅방 주인', type: () => User })
+  @ManyToOne(() => User)
+  @JoinColumn({ name: 'chat_owner' })
+  owner: User;
 
   @ApiProperty({ description: '채팅방 인원', type: () => [User], example: [] })
   @ManyToMany(() => User)

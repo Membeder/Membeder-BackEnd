@@ -5,11 +5,11 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
   JoinTable,
-  OneToMany,
   ManyToMany,
 } from 'typeorm';
 import { ApiProperty } from '@nestjs/swagger';
 import { Team } from '../../team/entites/team.entity';
+import { ChatRoom } from 'src/chat/entities/chat-room.entity';
 
 @Entity('user')
 export class User {
@@ -73,6 +73,15 @@ export class User {
   @ManyToMany(() => Team)
   @JoinTable({ name: 'user_team' })
   team: Team[];
+
+  @ApiProperty({
+    description: '채팅방 목록',
+    type: () => [ChatRoom],
+    example: [],
+  })
+  @ManyToMany(() => ChatRoom)
+  @JoinTable({ name: 'user_chat' })
+  chat: ChatRoom[];
 
   @CreateDateColumn()
   created: Date;
