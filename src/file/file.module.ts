@@ -15,5 +15,6 @@ import { multerOptionsFactory } from '../common/utils/multer.option';
   ],
   controllers: [FileController],
   providers: [FileService],
+  exports: [FileService],
 })
 export class FileModule {}

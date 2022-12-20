@@ -10,19 +10,39 @@ import { TeamApplicantService } from './team-applicant.service';
 import { TeamPermission } from './entites/team-permission.entity';
 import { TeamPermissionService } from './team-permission.service';
 import { TeamPermissionController } from './team-permission.controller';
-import { TeamJoinRequestController } from './team-join-request.controller';
+import { TeamApplicantController } from './team-applicant.controller';
+import { TeamNoticeService } from './team-notice.service';
+import { TeamNoticeController } from './team-notice.controller';
+import { TeamNotice } from './entites/team-notice.entity';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([User, Team, TeamApplicant, TeamPermission]),
+    TypeOrmModule.forFeature([
+      User,
+      Team,
+      TeamApplicant,
+      TeamPermission,
+      TeamNotice,
+    ]),
     UserModule,
   ],
   controllers: [
-    TeamJoinRequestController,
+    TeamApplicantController,
     TeamPermissionController,
+    TeamNoticeController,
     TeamController,
   ],
-  providers: [TeamService, TeamApplicantService, TeamPermissionService],
-  exports: [TeamService, TeamApplicantService, TeamPermissionService],
+  providers: [
+    TeamService,
+    TeamApplicantService,
+    TeamPermissionService,
+    TeamNoticeService,
+  ],
+  exports: [
+    TeamService,
+    TeamApplicantService,
+    TeamPermissionService,
+    TeamNoticeService,
+  ],
 })
 export class TeamModule {}
