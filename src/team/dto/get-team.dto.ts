@@ -2,6 +2,7 @@ import { CreateTeamDto } from './create-team.dto';
 import { ApiProperty } from '@nestjs/swagger';
 import { GetUserDto } from '../../user/dto/get-user.dto';
 import { Schedule } from '../../schedule/entities/schedule.entity';
+import { GetTeamNoticeDto } from './get-team-notice.dto';
 
 export class GetTeamDto extends CreateTeamDto {
   @ApiProperty({
@@ -47,6 +48,14 @@ export class GetTeamDto extends CreateTeamDto {
     required: false,
   })
   join_request: GetUserDto[];
+
+  @ApiProperty({
+    description: '팀 공지',
+    type: () => [GetTeamNoticeDto],
+    example: [],
+    required: false,
+  })
+  notice: GetTeamNoticeDto[];
 
   @ApiProperty({ description: '팀 생성일' })
   created: Date;
