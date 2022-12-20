@@ -21,6 +21,7 @@ export class ChatService {
   async get(room_id: string, user_id: string) {
     const room = await this.chatRoomRepository.findOne({
       where: { id: room_id },
+      relations: ['member'],
     });
     if (!room)
       throw new HttpException('The room is not exist.', HttpStatus.BAD_REQUEST);
@@ -38,6 +39,7 @@ export class ChatService {
   async create(room_id: string, user_id: string, data: CreateChatDto) {
     const room = await this.chatRoomRepository.findOne({
       where: { id: room_id },
+      relations: ['member', 'chat'],
     });
     if (!room)
       throw new HttpException('The room is not exist.', HttpStatus.BAD_REQUEST);
@@ -46,13 +48,23 @@ export class ChatService {
         'The user does not exist in this room.',
         HttpStatus.BAD_REQUEST,
       );
-    const chat = await this.chatRepository.create(data);
-    return await this.chatRepository.save(chat);
+    const chat = await this.chatRepository.create({ ...data, room });
+    await this.chatRepository.save(chat);
+    room.chat.push(chat);
+    await this.chatRoomRepository.save(room);
+    return chat;
   }
 
   async createRoom(user_id: string, data: CreateChatRoomDto) {
-    const owner = await this.userRepository.findOne({ where: { id: user_id } });
-    const room = await this.chatRoomRepository.create({ ...data, owner });
+    const owner = await this.userRepository.findOne({
+      where: { id: user_id },
+      relations: ['chat'],
+    });
+    const room = await this.chatRoomRepository.create({
+      ...data,
+      owner,
+      member: [owner],
+    });
     await this.chatRoomRepository.save(room);
     owner.chat.push(room);
     await this.userRepository.save(owner);
@@ -98,6 +110,7 @@ export class ChatService {
       );
     const user = await this.userRepository.findOne({
       where: { id: add_user_id },
+      relations: ['chat'],
     });
     if (!user)
       throw new HttpException('The user is not exist.', HttpStatus.BAD_REQUEST);
@@ -127,6 +140,7 @@ export class ChatService {
       );
     const user = await this.userRepository.findOne({
       where: { id: remove_user_id },
+      relations: ['chat'],
     });
     if (!user)
       throw new HttpException('The user is not exist.', HttpStatus.BAD_REQUEST);
