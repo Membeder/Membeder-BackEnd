@@ -97,6 +97,7 @@ export class ChatController {
     description: '채팅방을 제거합니다.',
   })
   @ApiOkResponse({ description: '채팅방을 성공적으로 제거합니다.' })
+  @ApiCookieAuth()
   async removeRoom(@Param('room_id') room_id: string, @Req() req, @Res() res) {
     await this.chatService.removeRoom(room_id, req.user.id);
     res.sendStatus(HttpStatus.OK);
